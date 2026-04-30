@@ -1,0 +1,163 @@
+:root {
+  --bg-dark: #0d0d0d;
+  --bg-card: #1a1a1a;
+  --text-primary: #f5f5f5;
+  --text-secondary: #888;
+  --accent: #ff4444;
+  --accent-hover: #ff6666;
+  --border: #333;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  width: 100%;
+  min-height: 100vh;
+}
+
+.report-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.report-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Report card - optimized for 9:16 screenshot */
+.report-card {
+  width: 360px;
+  height: 640px;
+  background: linear-gradient(180deg, #0d0d0d 0%, #1a1a1a 100%);
+  border-radius: 24px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.card-header {
+  text-align: center;
+}
+
+.card-header h1 {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -1px;
+}
+
+.week-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+}
+
+.main-stat {
+  text-align: center;
+  padding: 24px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+}
+
+.stat-number {
+  display: block;
+  font-size: 96px;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.stat-label {
+  display: block;
+  font-size: 16px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-top: 8px;
+}
+
+.roast-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+}
+
+.roast-lines p {
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  font-style: italic;
+}
+
+.shame-score {
+  text-align: center;
+  padding: 24px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  border: 2px solid var(--accent);
+}
+
+.score-number {
+  font-size: 64px;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.score-label {
+  font-size: 24px;
+  color: var(--text-secondary);
+}
+
+.score-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 8px;
+}
+
+.card-footer {
+  text-align: center;
+}
+
+.card-footer span {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Share button */
+.btn-share {
+  padding: 16px 32px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 200px;
+}
+
+.btn-share:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+}

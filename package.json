@@ -1,0 +1,24 @@
+{
+  "name": "scrollshame",
+  "version": "1.0.0",
+  "description": "Your browser knows you doomscrolled at 2am.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage"
+  },
+  "dependencies": {
+    "html2canvas": "^1.4.1",
+    "preact": "^10.19.3"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.8.2",
+    "@types/chrome": "^0.0.260",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.4",
+    "vitest": "^4.1.5"
+  }
+}
