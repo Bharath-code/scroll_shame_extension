@@ -4,9 +4,7 @@
 // Storage keys
 const STORAGE_KEYS = {
   DAILY_PREFIX: 'day-',        // Daily aggregates: "day-2026-04-30"
-  WEEKLY_REPORT: 'weekly-report',
-  SETTINGS: 'settings',
-  LICENSE_KEY: 'license-key'
+  SETTINGS: 'settings'
 };
 
 // Track current window session
@@ -20,12 +18,23 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 // Restore session start time on startup
-chrome.runtime.onStartup.addListener(() => {
-  chrome.storage.local.get('session-start', (result) => {
+chrome.runtime.onStartup.addListener(async () => {
+  try {
+    const result = await new Promise((resolve, reject) => {
+      chrome.storage.local.get('session-start', (result) => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve(result);
+        }
+      });
+    });
     if (result['session-start']) {
       currentSessionStart = result['session-start'];
     }
-  });
+  } catch (error) {
+    console.error('[ScrollShame] Failed to restore session start:', error);
+  }
   cleanupOldData();
 });
 
@@ -124,17 +133,29 @@ function getTodayKey() {
 
 // Helper: get daily data
 async function getDailyData(key) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     chrome.storage.local.get(key, (result) => {
-      resolve(result[key] || {});
+      if (chrome.runtime.lastError) {
+        console.error('[ScrollShame] Failed to get daily data:', chrome.runtime.lastError);
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(result[key] || {});
+      }
     });
   });
 }
 
 // Helper: save daily data
 async function saveDailyData(key, data) {
-  return new Promise((resolve) => {
-    chrome.storage.local.set({ [key]: data }, resolve);
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.set({ [key]: data }, () => {
+      if (chrome.runtime.lastError) {
+        console.error('[ScrollShame] Failed to save daily data:', chrome.runtime.lastError);
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve();
+      }
+    });
   });
 }
 

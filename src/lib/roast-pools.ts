@@ -176,7 +176,7 @@ export const ROAST_VOICES: Record<RoastVoice, RoastPool> = {
     ],
     longSessions: [
       "{hours} hours is a significant time allocation. I'll mark this as 'focused activity' on your timesheet, but note the opportunity cost.",
-      "At {hours} hours of continuous engagement, you've exceeded the recommended daily session length by about {hours - 4} hours. That's billable time to burnout.",
+      "At {hours} hours of continuous engagement, you've exceeded the recommended daily session length by about {excessHours} hours. That's billable time to burnout.",
       "Continuous usage for {hours} hours doesn't qualify as overtime because it's not technically work. You can tell your manager that.",
       "{hours} hours... I'm required to note that this exceeds OSHA guidelines for screen time, but we're not in an OSHA-compliant environment."
     ],
@@ -199,11 +199,14 @@ export function formatRoast(template: string, stats: {
   time?: string;
   hours?: number;
   velocity?: number;
+  excessHours?: number;
 }): string {
+  const excessHours = stats.excessHours !== undefined ? stats.excessHours : Math.max(0, (stats.hours || 6) - 4);
   return template
     .replace('{count}', String(stats.peakTabs || stats.quickClosures || 0))
     .replace('{time}', stats.time || '1:47am')
     .replace('{hours}', String(stats.hours || 6))
+    .replace('{excessHours}', String(excessHours))
     .replace('{velocity}', String(stats.velocity || 1200));
 }
 

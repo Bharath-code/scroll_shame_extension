@@ -234,7 +234,7 @@ function Report() {
                 <p>{formatRoast(getRandomRoast(currentRoastPool.quickClosures), { quickClosures: stats?.quickClosures })}</p>
               )}
               {stats?.longSessions > 0 && (
-                <p>{formatRoast(getRandomRoast(currentRoastPool.longSessions), { hours: Math.min(stats?.longSessions || 1, 12) })}</p>
+                <p>{formatRoast(getRandomRoast(currentRoastPool.longSessions), { hours: Math.min(stats?.longSessions || 1, 12), excessHours: Math.max(0, Math.min(stats?.longSessions || 1, 12) - 4) })}</p>
               )}
               {stats?.spiralSessions > 0 && (
                 <p>{formatRoast(getRandomRoast(currentRoastPool.spiralSessions), { velocity: Math.floor(400 + Math.random() * 800) })}</p>

@@ -1,6 +1,7 @@
 import type { DayData } from './scoring';
 import type { LicenseStatus } from './license';
 import type { RoastVoice } from './roast-pools';
+import { keyForDate } from './date-key';
 
 export interface StorageAdapter {
   getDaily(dateKey: string): Promise<DayData>;
@@ -119,11 +120,19 @@ export class ChromeStorageAdapter implements StorageAdapter {
     const startDate = new Date(start);
     const endDate = new Date(end);
 
-    for (let d = new Date(startDate); d <= endDate; d = new Date(d.getTime() + 86400000)) {
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      keys.push(`day-${year}-${month}-${day}`);
+    // Validate dates
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      return keys;
+    }
+
+    const current = new Date(startDate);
+    current.setHours(0, 0, 0, 0);
+    const last = new Date(endDate);
+    last.setHours(0, 0, 0, 0);
+
+    while (current <= last) {
+      keys.push(keyForDate(new Date(current)));
+      current.setDate(current.getDate() + 1);
     }
 
     return keys;

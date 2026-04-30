@@ -44,8 +44,14 @@ export function getDateRangeKeys(startDate: Date, endDate: Date): string[] {
   }
 
   const keys: string[] = [];
-  for (let d = new Date(startDate); d <= endDate; d = new Date(d.getTime() + 86400000)) {
-    keys.push(keyForDate(new Date(d)));
+  const current = new Date(startDate);
+  current.setHours(0, 0, 0, 0);
+  const end = new Date(endDate);
+  end.setHours(0, 0, 0, 0);
+
+  while (current <= end) {
+    keys.push(keyForDate(new Date(current)));
+    current.setDate(current.getDate() + 1);
   }
   return keys;
 }

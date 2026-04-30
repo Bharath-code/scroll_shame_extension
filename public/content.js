@@ -7,6 +7,7 @@
   let lastScrollTime = 0;
   let lastScrollPosition = 0;
   let scrollTimestamps = [];
+  let lastScrollVelocitySent = 0;
 
   const VELOCITY_THRESHOLD = 800; // px/sec for "spiraling"
   const SAMPLE_INTERVAL = 100; // ms between samples
@@ -48,10 +49,10 @@
   function sendScrollVelocity(velocity) {
     // Debounce - don't send too frequently
     const now = Date.now();
-    if (sendScrollVelocity.lastSent && (now - sendScrollVelocity.lastSent) < 5000) {
+    if (lastScrollVelocitySent && (now - lastScrollVelocitySent) < 5000) {
       return;
     }
-    sendScrollVelocity.lastSent = now;
+    lastScrollVelocitySent = now;
 
     chrome.runtime.sendMessage({
       type: 'scroll-velocity',

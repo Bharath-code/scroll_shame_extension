@@ -34,6 +34,17 @@ export function getShameTitle(score: number): string {
 }
 
 export function aggregateStats(dataList: DayData[]): WeeklyStats {
+  if (dataList.length === 0) {
+    return {
+      peakTabs: 0,
+      nightSessions: 0,
+      quickClosures: 0,
+      longSessions: 0,
+      spiralSessions: 0,
+      totalScrollDistance: 0
+    };
+  }
+
   return dataList.reduce((acc, data) => ({
     peakTabs: Math.max(acc.peakTabs || 0, data.peakTabs || 0),
     nightSessions: (acc.nightSessions || 0) + (data.nightSessions || 0),
@@ -41,5 +52,5 @@ export function aggregateStats(dataList: DayData[]): WeeklyStats {
     longSessions: (acc.longSessions || 0) + (data.longSessions || 0),
     spiralSessions: (acc.spiralSessions || 0) + (data.spiralSessions || 0),
     totalScrollDistance: (acc.totalScrollDistance || 0) + (data.totalScrollDistance || 0)
-  }), {});
+  }), {} as WeeklyStats);
 }
