@@ -12,6 +12,12 @@ const UPGRADE_DAYS_KEY = 'upgrade-dismissed-until';
 const UPGRADE_VIEW_THRESHOLD = 3;
 const UPGRADE_DISMISSAL_DAYS = 30;
 
+const NIGHT_TIMES = ['11:42pm', '1:15am', '2:33am', '12:58am', '3:07am', '1:47am', '2:14am', '12:23am'];
+
+function getRandomNightTime(): string {
+  return NIGHT_TIMES[Math.floor(Math.random() * NIGHT_TIMES.length)];
+}
+
 async function getReportViews(): Promise<number> {
   return new Promise((resolve, reject) => {
     chrome.storage.local.get(REPORT_VIEWS_KEY, (result) => {
@@ -61,9 +67,14 @@ async function isUpgradeDismissed(): Promise<boolean> {
 }
 
 async function shouldShowUpgrade(): Promise<boolean> {
-  const views = await getReportViews();
-  const dismissed = await isUpgradeDismissed();
-  return views >= UPGRADE_VIEW_THRESHOLD && !dismissed;
+  try {
+    const views = await getReportViews();
+    const dismissed = await isUpgradeDismissed();
+    return views >= UPGRADE_VIEW_THRESHOLD && !dismissed;
+  } catch (error) {
+    console.error('[ScrollShame] Failed to check upgrade eligibility:', error);
+    return false;
+  }
 }
 
 function Report() {
@@ -79,32 +90,41 @@ function Report() {
   }, []);
 
   async function loadWeeklyStats() {
-    const pro = await isPro();
-    setIsProUser(pro);
+    try {
+      const pro = await isPro();
+      setIsProUser(pro);
 
-    const days = getLast7Days();
-    const allData: DayData[] = [];
+      const days = getLast7Days();
+      const allData: DayData[] = [];
 
-    for (const dayKey of days) {
-      const data = await storage.getDaily(dayKey);
-      if (data && Object.keys(data).length > 0) {
-        allData.push(data);
+      for (const dayKey of days) {
+        const data = await storage.getDaily(dayKey);
+        if (data && Object.keys(data).length > 0) {
+          allData.push(data);
+        }
       }
+
+      const aggregated = aggregateStats(allData);
+      setStats(aggregated);
+
+      // License-aware roast voice selection
+      const settings = await storage.getSettings();
+      const voice = await getAllowedVoice(settings.roastVoice);
+      setCurrentRoastPool(ROAST_VOICES[voice] || ROAST_VOICES.therapist);
+
+      // Track report views for upgrade trigger (with error handling)
+      try {
+        await incrementReportViews();
+        const upgradeNeeded = await shouldShowUpgrade();
+        setShowUpgrade(upgradeNeeded);
+      } catch (trackError) {
+        console.error('[ScrollShame] Failed to track report views:', trackError);
+      }
+    } catch (error) {
+      console.error('[ScrollShame] Failed to load weekly stats:', error);
+    } finally {
+      setLoading(false);
     }
-
-    const aggregated = aggregateStats(allData);
-    setStats(aggregated);
-
-    // License-aware roast voice selection
-    const voice = await getAllowedVoice();
-    setCurrentRoastPool(ROAST_VOICES[voice] || ROAST_VOICES.therapist);
-
-    // Track report views for upgrade trigger
-    const viewCount = await incrementReportViews();
-    const upgradeNeeded = await shouldShowUpgrade();
-    setShowUpgrade(upgradeNeeded);
-
-    setLoading(false);
   }
 
   async function copyToClipboard() {
@@ -133,7 +153,11 @@ function Report() {
         }
       }
 
-      canvas.toBlob(async (blob) => {
+      try {
+        const blob = await new Promise<Blob | null>((resolve, reject) => {
+          canvas.toBlob((b) => resolve(b), 'image/png');
+        });
+
         if (blob) {
           await navigator.clipboard.write([
             new ClipboardItem({ 'image/png': blob })
@@ -141,9 +165,11 @@ function Report() {
           setCopied(true);
           setTimeout(() => setCopied(false), 2000);
         }
-      });
+      } catch (blobError) {
+        console.error('[ScrollShame] Failed to create blob:', blobError);
+      }
     } catch (err) {
-      console.error('Failed to copy:', err);
+      console.error('[ScrollShame] Failed to copy:', err);
     }
   }
 
@@ -200,12 +226,18 @@ function Report() {
             </div>
 
             <div class="roast-lines">
-              <p>{formatRoast(getRandomRoast(currentRoastPool.peakTabs), stats)}</p>
-              {stats.nightSessions > 0 && (
-                <p>{formatRoast(getRandomRoast(currentRoastPool.nightSessions), stats)}</p>
+              <p>{formatRoast(getRandomRoast(currentRoastPool.peakTabs), { peakTabs: stats?.peakTabs })}</p>
+              {stats?.nightSessions > 0 && (
+                <p>{formatRoast(getRandomRoast(currentRoastPool.nightSessions), { time: getRandomNightTime() })}</p>
               )}
-              {stats.quickClosures > 10 && (
-                <p>{formatRoast(getRandomRoast(currentRoastPool.quickClosures), stats)}</p>
+              {stats?.quickClosures > 10 && (
+                <p>{formatRoast(getRandomRoast(currentRoastPool.quickClosures), { quickClosures: stats?.quickClosures })}</p>
+              )}
+              {stats?.longSessions > 0 && (
+                <p>{formatRoast(getRandomRoast(currentRoastPool.longSessions), { hours: Math.min(stats?.longSessions || 1, 12) })}</p>
+              )}
+              {stats?.spiralSessions > 0 && (
+                <p>{formatRoast(getRandomRoast(currentRoastPool.spiralSessions), { velocity: Math.floor(400 + Math.random() * 800) })}</p>
               )}
             </div>
 
