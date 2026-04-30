@@ -1,5 +1,9 @@
 import { render } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
+import { isPro, upgradeToPro } from '../lib/license';
+
+const PRO_VOICES = ['therapist', 'drill-sergeant', 'your-mom', 'tech-bro', 'accountant'];
+const FREE_VOICES = ['therapist'];
 
 function Options() {
   const [settings, setSettings] = useState({
@@ -12,23 +16,20 @@ function Options() {
     roastVoice: 'therapist'
   });
 
-  const [licenseKey, setLicenseKey] = useState('');
+  const [isProUser, setIsProUser] = useState(false);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     loadSettings();
   }, []);
 
-  function loadSettings() {
+  async function loadSettings() {
+    const pro = await isPro();
+    setIsProUser(pro);
+
     chrome.storage.local.get('settings', (result) => {
       if (result.settings) {
         setSettings(result.settings);
-      }
-    });
-
-    chrome.storage.sync.get('license-key', (result) => {
-      if (result['license-key']) {
-        setLicenseKey(result['license-key']);
       }
     });
   }
@@ -40,18 +41,20 @@ function Options() {
     });
   }
 
-  function handleLicenseSave() {
-    chrome.storage.sync.set({ 'license-key': licenseKey }, () => {
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
-    });
-  }
-
   return (
     <div class="options-container">
       <header class="options-header">
-        <h1>ScrollShame Settings</h1>
+        <h1>ScrollShame Settings {!isProUser && <span class="free-badge">Free</span>}{isProUser && <span class="pro-badge">Pro</span>}</h1>
       </header>
+
+      {!isProUser && (
+        <div class="upgrade-banner">
+          <p>🔓 Unlock all 5 roast voices + watermark-free exports</p>
+          <button class="btn-upgrade" onClick={() => window.open('https://polar.sh/scrollshame', '_blank')}>
+            Upgrade to Pro - $1.99
+          </button>
+        </div>
+      )}
 
       <section class="settings-section">
         <h2>Tracking</h2>
@@ -113,28 +116,26 @@ function Options() {
           value={settings.roastVoice}
           onChange={(e) => setSettings({...settings, roastVoice: e.target.value})}
           class="select-input"
+          disabled={!isProUser && settings.roastVoice !== 'therapist'}
         >
           <option value="therapist">The Therapist (Free)</option>
-          <option value="drill-sergeant">The Drill Sergeant ($1.99)</option>
-          <option value="your-mom">Your Mom ($1.99)</option>
-          <option value="tech-bro">Tech Bro ($1.99)</option>
-          <option value="accountant">The Accountant ($1.99)</option>
+          {isProUser ? (
+            <>
+              <option value="drill-sergeant">The Drill Sergeant</option>
+              <option value="your-mom">Your Mom</option>
+              <option value="tech-bro">Tech Bro</option>
+              <option value="accountant">The Accountant</option>
+            </>
+          ) : (
+            <>
+              <option value="drill-sergeant" disabled>The Drill Sergeant 🔒 (Pro)</option>
+              <option value="your-mom" disabled>Your Mom 🔒 (Pro)</option>
+              <option value="tech-bro" disabled>Tech Bro 🔒 (Pro)</option>
+              <option value="accountant" disabled>The Accountant 🔒 (Pro)</option>
+            </>
+          )}
         </select>
-        <p class="hint">Upgrade to Shame Bundle ($3.99) to unlock all voices!</p>
-      </section>
-
-      <section class="settings-section">
-        <h2>License Key</h2>
-        <input
-          type="text"
-          value={licenseKey}
-          onChange={(e) => setLicenseKey(e.target.value)}
-          placeholder="Enter your license key"
-          class="text-input"
-        />
-        <button class="btn-secondary" onClick={handleLicenseSave}>
-          Apply Key
-        </button>
+        {!isProUser && <p class="hint">Upgrade to unlock all voices!</p>}
       </section>
 
       <div class="actions">
@@ -146,7 +147,6 @@ function Options() {
 
       <footer class="options-footer">
         <p>Data is stored locally. Nothing leaves your browser.</p>
-        <p class="privacy-link">See our privacy policy</p>
       </footer>
     </div>
   );
