@@ -1,4 +1,10 @@
+import { isPro } from './license';
+import { storage } from './storage';
+
 export type RoastVoice = 'therapist' | 'drill-sergeant' | 'your-mom' | 'tech-bro' | 'accountant';
+
+export const FREE_VOICES: RoastVoice[] = ['therapist'];
+export const PRO_VOICES: RoastVoice[] = ['therapist', 'drill-sergeant', 'your-mom', 'tech-bro', 'accountant'];
 
 export interface RoastPool {
   peakTabs: string[];
@@ -188,8 +194,8 @@ export function getRandomRoast(pool: string[]): string {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-export function formatRoast(template: string, stats: { 
-  peakTabs?: number; 
+export function formatRoast(template: string, stats: {
+  peakTabs?: number;
   quickClosures?: number;
   time?: string;
   hours?: number;
@@ -200,4 +206,28 @@ export function formatRoast(template: string, stats: {
     .replace('{time}', stats.time || '1:47am')
     .replace('{hours}', String(stats.hours || 6))
     .replace('{velocity}', String(stats.velocity || 1200));
+}
+
+export async function getAllowedVoice(): Promise<RoastVoice> {
+  const pro = await isPro();
+  const allowedVoices = pro ? PRO_VOICES : FREE_VOICES;
+  
+  // Check user's saved preference first
+  try {
+    const settings = await storage.getSettings();
+    const savedVoice = settings.roastVoice;
+    if (savedVoice && allowedVoices.includes(savedVoice)) {
+      return savedVoice;
+    }
+  } catch (error) {
+    console.error('[RoastPools] Failed to load settings:', error);
+  }
+  
+  // Fallback to random voice from allowed voices
+  return allowedVoices[Math.floor(Math.random() * allowedVoices.length)];
+}
+
+export async function getAllowedVoices(): Promise<RoastVoice[]> {
+  const pro = await isPro();
+  return pro ? PRO_VOICES : FREE_VOICES;
 }

@@ -4,12 +4,74 @@ import html2canvas from 'html2canvas';
 import { calculateShameScore, getShameTitle, aggregateStats, DayData } from '../lib/scoring';
 import { storage } from '../lib/storage';
 import { getLast7Days } from '../lib/date-key';
-import { ROAST_VOICES, getRandomRoast, formatRoast, RoastVoice } from '../lib/roast-pools';
+import { ROAST_VOICES, getRandomRoast, formatRoast, getAllowedVoice, RoastVoice } from '../lib/roast-pools';
+import { isPro } from '../lib/license';
+
+const REPORT_VIEWS_KEY = 'report-views';
+const UPGRADE_DAYS_KEY = 'upgrade-dismissed-until';
+const UPGRADE_VIEW_THRESHOLD = 3;
+const UPGRADE_DISMISSAL_DAYS = 30;
+
+async function getReportViews(): Promise<number> {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(REPORT_VIEWS_KEY, (result) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(result[REPORT_VIEWS_KEY] || 0);
+      }
+    });
+  });
+}
+
+async function incrementReportViews(): Promise<number> {
+  const current = await getReportViews();
+  const newCount = current + 1;
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.set({ [REPORT_VIEWS_KEY]: newCount }, () => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(newCount);
+      }
+    });
+  });
+}
+
+async function isUpgradeDismissed(): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(UPGRADE_DAYS_KEY, (result) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        const dismissedUntil = result[UPGRADE_DAYS_KEY];
+        if (!dismissedUntil) {
+          resolve(false);
+          return;
+        }
+        const dismissedDate = new Date(dismissedUntil);
+        if (isNaN(dismissedDate.getTime())) {
+          resolve(false);
+          return;
+        }
+        resolve(Date.now() < dismissedDate.getTime());
+      }
+    });
+  });
+}
+
+async function shouldShowUpgrade(): Promise<boolean> {
+  const views = await getReportViews();
+  const dismissed = await isUpgradeDismissed();
+  return views >= UPGRADE_VIEW_THRESHOLD && !dismissed;
+}
 
 function Report() {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [showUpgrade, setShowUpgrade] = useState(false);
+  const [isProUser, setIsProUser] = useState(false);
   const [currentRoastPool, setCurrentRoastPool] = useState(ROAST_VOICES.therapist);
 
   useEffect(() => {
@@ -17,6 +79,9 @@ function Report() {
   }, []);
 
   async function loadWeeklyStats() {
+    const pro = await isPro();
+    setIsProUser(pro);
+
     const days = getLast7Days();
     const allData: DayData[] = [];
 
@@ -30,10 +95,14 @@ function Report() {
     const aggregated = aggregateStats(allData);
     setStats(aggregated);
 
-    // Load user's roast voice preference
-    const settings = await storage.getSettings();
-    const voice = settings.roastVoice as RoastVoice;
+    // License-aware roast voice selection
+    const voice = await getAllowedVoice();
     setCurrentRoastPool(ROAST_VOICES[voice] || ROAST_VOICES.therapist);
+
+    // Track report views for upgrade trigger
+    const viewCount = await incrementReportViews();
+    const upgradeNeeded = await shouldShowUpgrade();
+    setShowUpgrade(upgradeNeeded);
 
     setLoading(false);
   }
@@ -43,7 +112,27 @@ function Report() {
     if (!card) return;
 
     try {
-      const canvas = await html2canvas(card);
+      const canvas = await html2canvas(card, {
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: null
+      });
+
+      if (!isProUser) {
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.save();
+          ctx.globalAlpha = 0.3;
+          ctx.font = 'bold 24px monospace';
+          ctx.fillStyle = '#ff0000';
+          ctx.translate(canvas.width / 2, canvas.height / 2);
+          ctx.rotate(-Math.PI / 6);
+          ctx.textAlign = 'center';
+          ctx.fillText('SCROLL SHAME FREE', 0, 0);
+          ctx.restore();
+        }
+      }
+
       canvas.toBlob(async (blob) => {
         if (blob) {
           await navigator.clipboard.write([
@@ -56,6 +145,21 @@ function Report() {
     } catch (err) {
       console.error('Failed to copy:', err);
     }
+  }
+
+  async function dismissUpgrade(): Promise<void> {
+    const dismissalDate = new Date();
+    dismissalDate.setDate(dismissalDate.getDate() + UPGRADE_DISMISSAL_DAYS);
+    return new Promise<void>((resolve, reject) => {
+      chrome.storage.local.set({ [UPGRADE_DAYS_KEY]: dismissalDate.toISOString() }, () => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          setShowUpgrade(false);
+          resolve();
+        }
+      });
+    });
   }
 
   if (loading) {
@@ -111,9 +215,20 @@ function Report() {
               <p class="score-title">{shameTitle}</p>
             </div>
 
+            {showUpgrade && (
+              <div class="upgrade-prompt">
+                <p>🔓 Unlock all 5 roast voices + export without watermark</p>
+                <button class="btn-upgrade" onClick={() => window.open('https://polar.sh/scrollshame', '_blank')}>
+                  Upgrade to Pro - $1.99
+                </button>
+                <button class="btn-dismiss" onClick={dismissUpgrade}>Not now</button>
+              </div>
+            )}
+
             <footer class="card-footer">
               <span>scrollshame.com</span>
               <span class="tagline">Your browser knows what you did.</span>
+              {!isProUser && <span class="free-badge">Free</span>}
             </footer>
           </div>
           <div class="receipt-bottom"></div>
@@ -122,6 +237,9 @@ function Report() {
         <button class="btn-share" onClick={copyToClipboard}>
           {copied ? '✓ Copied!' : 'Copy Receipt'}
         </button>
+        {!isProUser && (
+          <p class="free-notice">Free tier - upgrade to remove watermark</p>
+        )}
       </div>
     </div>
   );
