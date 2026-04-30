@@ -1,4 +1,6 @@
 import type { DayData } from './scoring';
+import type { LicenseStatus } from './license';
+import type { RoastVoice } from './roast-pools';
 
 export interface StorageAdapter {
   getDaily(dateKey: string): Promise<DayData>;
@@ -6,7 +8,13 @@ export interface StorageAdapter {
   getRange(startDate: string, endDate: string): Promise<DayData[]>;
   getSettings(): Promise<ExtensionSettings>;
   setSettings(settings: ExtensionSettings): Promise<void>;
+  getLicenseStatus(): Promise<LicenseStatus>;
+  setLicenseStatus(status: LicenseStatus): Promise<void>;
 }
+
+const DEFAULT_LICENSE: LicenseStatus = {
+  tier: 'free'
+};
 
 export interface ExtensionSettings {
   notificationTime: string;
@@ -15,7 +23,7 @@ export interface ExtensionSettings {
   trackLateNight: boolean;
   trackTabChurn: boolean;
   trackSessionLength: boolean;
-  roastVoice: string;
+  roastVoice: RoastVoice;
 }
 
 const DEFAULT_SETTINGS: ExtensionSettings = {
@@ -73,6 +81,30 @@ export class ChromeStorageAdapter implements StorageAdapter {
   async setSettings(settings: ExtensionSettings): Promise<void> {
     return new Promise((resolve, reject) => {
       chrome.storage.local.set({ settings }, () => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  async getLicenseStatus(): Promise<LicenseStatus> {
+    return new Promise((resolve, reject) => {
+      chrome.storage.local.get('license-status', (result) => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve(result['license-status'] || DEFAULT_LICENSE);
+        }
+      });
+    });
+  }
+
+  async setLicenseStatus(status: LicenseStatus): Promise<void> {
+    return new Promise((resolve, reject) => {
+      chrome.storage.local.set({ 'license-status': status }, () => {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
         } else {
