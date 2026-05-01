@@ -17,6 +17,10 @@ ScrollShame sits in the category of "apps that are embarrassingly honest about y
 
 The weekly "digital therapy report" is the core viral mechanic. It is both the product and the social object.
 
+**Our Mantra:** *"We don't fix habits. We celebrate chaos. Your browser knows what you did, and it's not happy about it."*
+
+**What we are NOT:** We are not a habit tracker. We are not productivity software. We are not trying to fix anyone. We are entertainment. We are the brutally honest friend who tells it like it is.
+
 ## **1.1  The problem**
 
 People have no honest mirror for their browser behavior. They vaguely know they open too many tabs and scroll at night — but they have no number, no story, no receipt. ScrollShame gives them the receipt.
@@ -31,9 +35,12 @@ Shame is shareable when it's funny. A deadpan roast of your own behavior — "Yo
 | :---- | :---- | :---- |
 | Chrome Web Store installs | 500 | 3,000 |
 | Weekly active users | 200 | 1,500 |
-| Report share rate | \>20% | \>30% |
-| Paid unlock conversions | 50 | 400 |
-| Revenue (one-time sales) | $150 | $1,200 |
+| **Report share rate** | **\>20%** | **\>30%** |
+| **Screenshot rate** | **\>40%** | **\>50%** |
+| **X/TikTok mentions** | **50/month** | **100/month** |
+| Base Pro conversions | 20 | 150 |
+| Pro+ Subscription upgrades | 10 | 50 |
+| Revenue (base + subscriptions) | $450 | $3,500 |
 
 # **2\. Target User**
 
@@ -99,21 +106,142 @@ Generated every Monday morning. The report is the hero feature — it's designed
 | SAMPLE — WEEK OF APRIL 21 Peak tabs: 61  |  Scroll score: Spiraling  |  Night sessions: 4"You opened 61 tabs, closed 58 of them without reading them, and called that research. You browsed at 1:47am on a Tuesday. For what. You know what you did."Shame Score: 74 / 100  —  Certified Tab Hoarder |
 | :---- |
 
-## **3.3  Roast pack system (monetization lever)**
+## **3.3  Roast Voices (The Soul of the Product)**
 
-The free tier includes one roast voice: "The Therapist" — calm, clinical, deeply concerned.
+The roast voice IS the product. It's not a feature — it's the personality. Every voice should feel like a distinct character roasting you.
 
-Paid roast packs ($1.99 each or $3.99 for all):
+### **Voice Roster**
 
-* The Drill Sergeant — aggressive, disappointed, military metaphors
+| Voice | Persona | Sample Roast |
+| :---- | :---- | :---- |
+| **The Therapist** | Calm, clinical, concerned | "I've diagnosed you with Browser Personality Disorder. The treatment? Close some tabs." |
+| **Drill Sergeant** | Aggressive, demanding | "CLOSE THE TAB, MAGGOT! THAT TAB DOESN'T LOVE YOU! IT'S USING YOU!" |
+| **Your Mom** | Disappointed, sighing | "I didn't raise you to have 47 tabs open at 2am. Your father is worried." |
+| **Tech Bro** | Startup-obsessed, metrics | "Your tab conversion rate is 3%. That's a failing startup. Pivot, bro." |
+| **The Accountant** | Bored, numbers-focused | "You've wasted $847 worth of RAM this week. That's a car payment. For tabs." |
+| **Reddit Commenter** | Judgmental, passive-aggressive | "YTA for opening that Reddit thread at 3am and closing it immediately. The judgment is eternal." |
+| **Conspiracy Theorist** | Paranoid, warning | "The tabs know what you did. They remember. They've been talking." |
+| **Your Ex** | Bitter, nostalgic | "You still haven't closed that tab from November. That's weird. That's concerning." |
+| **GPT-4** | AI-judgmental | "I've analyzed your behavior. The results are not great. Try being less chaotic." |
 
-* Your Mom — warm but devastating, starts every line with 'Honey,'
+### **Voice Unlock Model**
 
-* Tech Bro — congratulates you on your "productivity chaos" as a growth mindset
+| Tier | Voices Available |
+| :---- | :---- |
+| Free | Therapist only |
+| Pro Base ($15) | All 5 base voices |
+| Pro+ ($4.99/mo) | All 9 voices + future additions |
 
-* The Accountant — translates your scroll habits into billable hours lost
+## **3.4  Absurd Stats We Track**
 
-## **3.4  Leaderboard (virality engine)**
+| Signal | What We Track | Roast-Ready Output |
+| :---- | :---- | :---- |
+| **Peak Tab Count** | Highest tab count in session | "73 tabs. A new record. And not the good kind." |
+| **Tab Graveyard** | Tabs opened and closed without reading | "127 tabs closed without being read. R.I.P. knowledge." |
+| **Scroll Velocity** | Pixels per second | "2,400px/sec — faster than a Tesla on the highway. Why." |
+| **Amazon Clicker** | Amazon opens without purchases | "You opened Amazon 12 times today. Bought nothing. That's worse." |
+| **Recipe Hoarder** | Same recipe tab opened multiple times | "You have 3 tabs of the same recipe. You're not cooking. You're procrastinating." |
+| **Tab Decision Time** | Time spent switching between tabs | "23 minutes deciding between tabs. That's a meeting. You hate meetings." |
+| **Ghost Tabs** | Tabs open >7 days untouched | "This tab has been open for 6 days. Did you forget, or is it a memory?" |
+| **3AM Wikipedia** | Wikipedia visits after midnight | "Most visited site at 3am: Wikipedia. Down a rabbit hole again." |
+| **Backspace Rage** | Rapid backspace in text inputs | "47 backspaces in 3 seconds. The keyboard is scared of you." |
+| **Midnight Spiral** | Sessions between 12am-4am | "It's 4am. I'm not saying anything. I'm just watching." |
+
+## **3.5  Unhinged Features (Silly Interactions)**
+
+| Feature | Description | Trigger |
+| :---- | :---- | :---- |
+| **The Concerned Face** | 👁️ popup appears when tabs >20 | 20+ tabs open |
+| **Tab Zen Mode** | Buddhist koan appears: "A tab unopened is a tab saved" | 30+ tabs open |
+| **The Silence** | Modal: "It's 4am. I'm not saying anything. I'm just watching." | Usage after 4am |
+| **Random Intervention** | Full-screen "WHY" modal with countdown | Every 50th tab open |
+| **Tab Divorce** | "This tab has been open 14 days. It's time to let go." | Tab >14 days stale |
+| **Chaos Slot Machine** | Score reveals like a slot machine animation | Weekly report load |
+| **Reverse Tab Mode** | Opens tabs in reverse order so you click wrong one | User toggles on |
+| **Ghost Detection** | "You've had this tab open for 6 days. It's haunting me." | Tab >7 days untouched |
+
+## **3.6  Pro Features (Monetization Lever)**
+
+### **Pro Base Tier ($15 one-time) — Permanent Features**
+
+| Feature Category | Features Included |
+| :---- | :---- |
+| **Roast Voices** | All 5 base voices — Therapist, Drill Sergeant, Your Mom, Tech Bro, Accountant |
+| **Storage** | Unlimited history — no 12-week limit, keep all data forever |
+| **Social** | Global percentile rankings — "You're more chaotic than 94% of users" |
+| **Reports** | Full weekly reports with all voice options |
+| **Basic Gamification** | Roast Remix Mode — compare all 5 voices side-by-side |
+
+### **Pro+ Subscription ($4.99/mo) — Active Features**
+
+| Feature Category | Features Included |
+| :---- | :---- |
+| **Real-Time Intervention** | In-page modal stops you mid-spiral |
+| **Prediction** | Chaos Prediction Engine — "On pace to beat your record" |
+| **Analysis** | Pattern Analysis — time-of-day heatmaps, trigger detection, topic clustering |
+| **The "Why" Engine** | "You spiral most on Tuesdays between 2-4am" |
+| **Gamification** | Shame Streak System — track consecutive weekly reports, milestone badges |
+| **Visual** | Instant Replay Mode — watch timelapse of your tab spirals |
+| **Support** | Priority support for issues and feature requests |
+| **All Voices** | All 9 roast voices + future additions |
+
+**Note:** Pro Base ($15) gives users everything except the "active" features that require ongoing computation. Pro+ adds the real-time, predictive, and analysis features that justify a recurring cost.
+
+## **3.7  Share Mechanics (Viral Engine)**
+
+The report card is designed specifically to be screenshot and shared. That's the entire business model.
+
+### **The Report Card Design Spec**
+
+- **Dimensions:** 1080x1920 (9:16 phone screenshot ratio)
+- **Colors:** Red/black/yellow (warning aesthetic, bold)
+- **Typography:** Big numbers, funny fonts
+- **Roast:** Brutal, specific, unexpected
+- **One-tap:** Copy to clipboard as PNG
+
+### **Share Buttons**
+
+| Button | Action |
+| :---- | :---- |
+| **"I Hate This"** | Generates roast specifically for sharing on X |
+| **"Roast My Ex"** | Upload screenshot of someone's browser, we roast them |
+| **"My Chaos > Yours"** | Generates comparison link for direct challenge |
+| **"Ship It"** | Share to Twitter/X with one tap |
+| **"Send to Friend"** | Anonymous roast to send to a friend |
+
+### **Weekly Share Flow**
+
+```
+Monday 9am → Report generated →
+Screenshot-optimized card →
+"One-tap share" button →
+Copies to clipboard →
+User posts to X/Reddit/TikTok →
+"ScrollShame" link in corner →
+New users discover →
+Viral loop complete
+```
+
+## **3.8  Silly Product Behavior**
+
+Random unhinged interactions that make the product memorable:
+
+| When | What Happens |
+| :---- | :---- |
+| User opens 20+ tabs | 👁️ popup: "I'm watching. I'm concerned." |
+| User scrolls too fast | Screen shakes: "woah there cowboy" |
+| Midnight arrives | "It's officially tomorrow. Your habits won't improve." |
+| User closes a tab | Tiny celebration animation 🎉 |
+| Random Tuesday | "You have 47 tabs open. I'm not saying anything." |
+| User shares on X | "Saw your post. The data doesn't lie." |
+
+**Sound effects (optional):**
+- Weekly report reveal: Fanfare sound
+- High shame score: Sad trombone
+- Tab over 50: Suspenseful music
+- 3am usage: Clock ticking
+
+## **3.9  Leaderboard (virality engine)**
 
 Optional, anonymous. Users can opt in to submit their weekly shame score. A public leaderboard at scrollshame.com shows the top 10 most chaotic users globally each week. Names are anonymous usernames auto-generated on opt-in.
 
@@ -121,27 +249,66 @@ The leaderboard is updated every Monday and gets its own Product Hunt / Reddit p
 
 # **4\. Monetization**
 
-## **4.1  Pricing model**
+## **4.1  Pricing model — Hybrid Model**
 
 | Tier | What you get | Price |
 | :---- | :---- | :---- |
-| Free | Weekly report, Therapist roast pack, basic stats | $0 |
-| Roast Pack | Unlock any one additional roast voice | $1.99 one-time |
-| Shame Bundle | All roast packs, export to CSV, leaderboard badge | $3.99 one-time |
+| Free | Weekly report, Therapist roast voice, basic stats, 12-week history | $0 |
+| Pro Base (One-Time) | All 5 base roast voices, unlimited history, global rankings, basic weekly reports | $15 one-time |
+| Pro+ Subscription (Optional) | Real-time intervention, chaos prediction, pattern analysis, shame streak, instant replay, priority support, **all 9 voices** | $4.99/mo |
+
+### **Why This Pricing Works**
+
+- **$15 base:** Impulse-friendly (lol I'll spend $15 to be roasted)
+- **$4.99/mo optional:** Uncaps LTV from power users who want more content to share
+- **We're not competing with RescueTime** — we're competing with memes
+- **Users buy entertainment, not utility** — they're paying to laugh at themselves
+- **Viral loop IS the product** — if people share, we win
 
 ## **4.2  Revenue model rationale**
 
-The one-time model (no subscription) is intentional. It matches the impulse-buy psychology of the SlapMac playbook. Nobody budgets for a shame tracker. They buy it in a moment of recognition — "this is literally me" — and that moment does not survive a monthly commitment screen.
+The hybrid model is designed for maximum short-term conversion AND long-term LTV:
 
-The free tier with the share mechanic is the acquisition funnel. Viral reports bring users in. The roast pack upsell hits at the moment of highest delight — right after reading the free report.
+### Base Tier ($15 One-Time)
+
+- **Impulse-friendly:** $15 is common impulse-purchase price point
+- **Value alignment:** Feature stack justifies $15 (5 voices + history + rankings = ~$10 value alone)
+- **Premium perception:** Doesn't feel "cheap" like $10 alternatives
+- **Conversion optimization:** 8-10% expected conversion rate
+
+### Pro+ Subscription ($4.99/mo)
+
+- **Active features only:** Real-time intervention, prediction, patterns — features that require ongoing computation
+- **Passive users don't pay:** Casual users get permanent value from $15 purchase
+- **Power user upgrade:** 20% of base users expected to upgrade (industry average)
+- **LTV multiplier:** Creates recurring revenue from engaged users
+
+### Revenue Projections (Conservative)
+
+| Timeline | Installs | Base Conversions | Pro+ Upgrades | Monthly MRR | Total Revenue |
+| :---- | :---- | :---- | :---- | :---- | :---- |
+| Year 1 | 3,000 | 240 × $15 = $3,600 | 48 × $4.99 | $240/mo | $6,480 |
+| Year 2 | 6,000 | 480 × $15 = $7,200 | 96 × $4.99 | $480/mo | $12,960 |
+| Year 3 | 12,000 | 960 × $15 = $14,400 | 192 × $4.99 | $960/mo | $25,920 |
+
+**3-Year LTV:** $15 + ($4.99 × 12 × 0.20) = **$27 per user** (vs $10 one-time = $10)
+
+### Feature Split Rationale
+
+- **One-time ($15):** Permanent value — voices, history, rankings don't require ongoing server/compute
+- **Subscription ($4.99/mo):** Active features — intervention modals, prediction engine, pattern analysis require ongoing processing
 
 ## **4.3  Billing infrastructure**
 
-* Polar.sh for payment processing (aligned with your existing stack)
+* Polar.sh for both one-time and subscription payments
 
-* License key embedded in Chrome storage after purchase
+* License key stored in chrome.storage.sync after base purchase
 
-* No backend auth required — license validation is client-side with a simple key check
+* Pro+ subscription managed via Polar.sh customer portal
+
+* No backend auth required — license validation is client-side with key check
+
+* Annual Pro+ option: $39/year (35% savings) for users who want commitment discount
 
 # **5\. Viral Loop Design**
 
@@ -157,31 +324,81 @@ The weekly report card is designed as a social object first, a product second. D
 
 * No "Made with" banner — the URL does the same job without the cringe
 
-## **5.2  Creator discount (SlapMac play)**
+**Key insight:** Users don't share because they're proud. They share because it's funny to roast themselves publicly.
 
-Post a screenshot of your report on X/Instagram/TikTok/LinkedIn tagging \#ScrollShame. Get a DM with a free Shame Bundle unlock code. This drives the initial wave of UGC and surfaces the product to new audiences with zero ad spend.
+## **5.2  UGC Engine (Our Growth Flywheel)**
 
-## **5.3  Weekly leaderboard content loop**
+### **"Share Your Roast, Get Free Pro"**
+
+Post a screenshot of your report on X/Instagram/TikTok/LinkedIn tagging #ScrollShame. Get a DM with a free Pro key.
+
+- Requires funny/engaging post to qualify
+- Creates constant stream of organic content
+- New users discover through friends' posts
+
+### **"Roast Battle" Contests**
+
+- Monthly: "Most brutal roast wins free Pro for life"
+- Weekly: "Best share of the week gets featured on our page"
+- User-generated roast lines get added to the voice pools
+
+### **"Roast Your Ex" Feature**
+
+- Users upload screenshot of someone's browser
+- We generate a roast for them
+- They send it to the friend → friend discovers product
+- Viral from second-degree sharing
+
+## **5.3  Weekly Content Loop (Perpetual)**
 
 Every Monday:
 
-1. Leaderboard resets and updates with new top shamers
+1. Report card generates for all users
 
-2. Automated post on @ScrollShame X account with winner callouts
+2. Users screenshot and share (viral moment)
 
-3. Email digest goes to all opted-in users showing their rank vs global average
+3. Automated post on @ScrollShame X account with winner callouts
 
-4. 3–5% of users share this email screenshot — free weekly impressions
+4. Reddit posts: "My weekly chaos report is here" (r/productivity, r/webdev, r/IndieHackers)
 
-## **5.4  Seeded launch strategy**
+5. TikToks: Screen record the report reveal with dramatic music
 
-* Post own week-1 report on X and relevant subreddits (r/productivity, r/webdev, r/IndieHackers)
+6. 3-5% share the leaderboard screenshot → free impressions
 
-* DM 10 developer influencers with a free bundle key and one sentence pitch
+7. New users install → repeat
 
-* Product Hunt launch on a Tuesday (highest weekday traffic, avoid Monday rush)
+## **5.4  Launch Strategy**
 
-* "Make a reel, get the bundle free" campaign from day 1
+### **Day 1-7: Seeding**
+
+- Post own week-1 report on X and relevant subreddits
+- DM 10 developer influencers with free key + one sentence pitch
+- "Make a reel, get the Pro free" campaign from day 1
+
+### **Week 2-4: Viral Amplification**
+
+- Product Hunt launch (Tuesday, highest weekday traffic)
+- #ScrollShame hashtag monitoring → engage with all posts
+- Comment on X posts sharing reports with roast replies
+- Reach out to TikTok creators doing "browser behavior" content
+
+### **Ongoing: Community Building**
+
+- Discord for power users to share roasts
+- Monthly "roast battles" with community-voted winners
+- User-submitted roast lines added to future voice packs
+- "Hall of Fame" for best shared reports
+
+## **5.5  Why This Loop Works**
+
+| Traditional App | ScrollShame |
+| :---- | :---- |
+| Users buy to solve a problem | Users buy to laugh at themselves |
+| Retention is daily usage | Retention is weekly anticipation |
+| Churn = failure | Churn = "they got value and moved on" (ok) |
+| Marketing = ads | Marketing = users posting for us |
+
+**We win when people screenshot and share. That's it. That's the entire game.**
 
 # **6\. Technical Architecture**
 
@@ -257,17 +474,25 @@ The share card is rendered as an HTML canvas inside report.html. html2canvas (or
 
 * Email digest
 
-## **7.3  7-day build schedule**
+## **7.3  Implementation schedule**
 
+### Phase 1: MVP Foundation (Week 1-2)
 | Day | Goal |
 | :---- | :---- |
 | Day 1 | Manifest V3 scaffold, background.js tab tracking, chrome.storage schema, local dev setup |
-| Day 2 | content.js scroll velocity \+ backspace detection, late-night flagging logic |
+| Day 2 | content.js scroll velocity + backspace detection, late-night flagging logic |
 | Day 3 | Weekly aggregation logic, roast line generator (rule-based, no LLM needed for MVP) |
 | Day 4 | Report card HTML/CSS design, shame score calculation, canvas PNG export |
-| Day 5 | Popup UI, options page, Polar.sh integration \+ license key unlock flow |
+| Day 5 | Popup UI, options page, Polar.sh integration + license key unlock flow |
 | Day 6 | QA, edge cases (no data yet, first week, etc.), Chrome Web Store submission |
 | Day 7 | Landing page (scrollshame.com), Product Hunt draft, launch assets, creator DMs |
+
+### Phase 2: Pro Features (Week 3-8)
+| Week | Features |
+| :---- | :---- |
+| Week 3-4 | All 5 roast voices, unlimited history, global percentile rankings |
+| Week 5-6 | Real-time tab intervention, chaos prediction engine |
+| Week 7-8 | Behavioral time machine, pattern analysis, shame streak, instant replay |
 
 # **8\. Competitive Landscape**
 
@@ -295,27 +520,47 @@ The leaderboard and the creator community that builds around it are the longer-t
 | Risk | Likelihood | Mitigation |
 | :---- | :---- | :---- |
 | Chrome Web Store review rejection | Medium — behavior tracking extensions face scrutiny | Explicit permissions disclosure, prominent privacy policy, local-only data claim front and center |
-| Privacy backlash | Medium | Zero data leaves device (except opt-in leaderboard). Audit log available in options page. |
-| One-week novelty, then uninstall | High | Weekly cadence by design — the product's value resets every Monday. Novelty is renewed. |
-| Roast copy gets old fast | Medium | Roast pack DLC adds new voices. Community roast submissions as a future feature. |
-| Low conversion from free to paid | Medium | Free tier is genuinely good. Upsell shown only after 2nd weekly report (after user is hooked). |
+| Privacy backlash | Low | Zero data leaves device. "Your data never leaves your browser" is core marketing claim. |
+| One-week novelty, then uninstall | Expected | This is the model. Weekly reset = new content. Users either share or leave. Both are wins. |
+| Roast copy gets old fast | Medium | Roast pack DLC adds new voices. Community submissions. 9 voices helps variety. |
+| Low conversion from free to paid | Medium | Free tier is genuinely fun. Upsell after 2nd report when user is hooked on the experience. |
+| "This is just a meme, not a real product" | High | That's the point. We're entertainment. We compete with TikTok, not RescueTime. |
+
+## **9.1  What We're Not**
+
+- **Not a habit tracker:** We don't help you improve. We make fun of you.
+- **Not productivity software:** We're not trying to solve a problem. We're creating content.
+- **Not serious:** Every interaction should feel slightly unhinged.
+- **Not for everyone:** Users who want to "actually fix their habits" are not our ICP.
+
+## **9.2  Churn = Success**
+
+In a weird way, users who churn after 2-3 months have gotten value:
+
+- They laughed at themselves
+- They shared with friends
+- They gave us a viral moment
+
+That's a win. We're not optimizing for 10-year retention. We're optimizing for weekly share rate.
 
 # **10\. Open Questions**
 
 ## **Before build starts**
 
-* Should the roast lines be rule-based (deterministic, fast, free) or LLM-generated (more varied, costs $0.001/report)? Recommendation: start rule-based, add LLM as a paid tier feature later.
+- Should the roast lines be rule-based (deterministic, fast, free) or LLM-generated (more varied, costs $0.001/report)? Recommendation: start rule-based, add LLM as a paid tier feature later.
 
-* Will Chrome Web Store approve an extension that explicitly tracks scroll behavior? Need to validate with a test submission.
+- Will Chrome Web Store approve an extension that explicitly tracks scroll behavior? Need to validate with a test submission.
 
-* Does the share image need to be generated server-side for better quality, or is canvas sufficient?
+- Does the share image need to be generated server-side for better quality, or is canvas sufficient?
 
 ## **Post-MVP**
 
-* Add a "fix your habits" mode that competes with RescueTime — or stay firmly in the comedy lane?
+- Add more absurd roast voices? (Character limit: 20+ voices)
+- "Roast Your Ex" feature for viral second-degree sharing?
+- Browser extension for other browsers? (Firefox, Edge)
 
-* Firefox/Edge port: low effort, doubles addressable market.
+---
 
-* Annual "Wrapped" version: a full-year shame report in December — natural Product Hunt moment.
+*ScrollShame PRD | v1.1 | Bharath | May 2026*
 
-ScrollShame PRD  |  v1.0  |  Bharath  |  April 2026
+*We're not here to fix anyone. We're here to make them laugh.*
