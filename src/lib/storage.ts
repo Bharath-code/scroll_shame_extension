@@ -11,6 +11,10 @@ export interface StorageAdapter {
   setSettings(settings: ExtensionSettings): Promise<void>;
   getLicenseStatus(): Promise<LicenseStatus>;
   setLicenseStatus(status: LicenseStatus): Promise<void>;
+  /** Returns the chaos score saved for the previous ISO week, or null if none. */
+  getLastWeekScore(): Promise<number | null>;
+  /** Persists the chaos score for the current ISO week. */
+  saveWeekScore(score: number): Promise<void>;
 }
 
 const DEFAULT_LICENSE: LicenseStatus = {
@@ -111,6 +115,47 @@ export class ChromeStorageAdapter implements StorageAdapter {
         } else {
           resolve();
         }
+      });
+    });
+  }
+
+  // ─── Week Score Persistence ───────────────────────────────────────────────
+
+  /**
+   * Returns the ISO week key for a given date, e.g. "2024-W18".
+   * This is separate from daily keys so week scores don't collide with day data.
+   */
+  private isoWeekKey(date: Date): string {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    // Shift to Thursday to correctly determine the ISO week year
+    d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7));
+    const yearStart = new Date(d.getFullYear(), 0, 4);
+    const week = 1 + Math.round(
+      ((d.getTime() - yearStart.getTime()) / 86_400_000 - 3 + ((yearStart.getDay() + 6) % 7)) / 7,
+    );
+    return `${d.getFullYear()}-W${String(week).padStart(2, '0')}`;
+  }
+
+  async getLastWeekScore(): Promise<number | null> {
+    const now  = new Date();
+    const prev = new Date(now);
+    prev.setDate(prev.getDate() - 7);
+    const key = `week-score-${this.isoWeekKey(prev)}`;
+    return new Promise((resolve) => {
+      chrome.storage.local.get(key, (result) => {
+        const val = result[key];
+        resolve(typeof val === 'number' ? val : null);
+      });
+    });
+  }
+
+  async saveWeekScore(score: number): Promise<void> {
+    const key = `week-score-${this.isoWeekKey(new Date())}`;
+    return new Promise((resolve, reject) => {
+      chrome.storage.local.set({ [key]: score }, () => {
+        if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
+        else resolve();
       });
     });
   }

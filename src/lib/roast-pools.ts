@@ -429,3 +429,70 @@ export async function getAllowedVoices(): Promise<RoastVoice[]> {
   ]);
   return proPlus ? PRO_PLUS_VOICES : pro ? PRO_VOICES : FREE_VOICES;
 }
+
+// ─── Clean Week Lines (TASK-04) ───────────────────────────────────────────────
+// Shown when chaosScore < 20. Same voice, suspicious tone — never sincere praise.
+
+export const CLEAN_WEEK_LINES: Record<RoastVoice, string[]> = {
+  'therapist': [
+    "Fewer than 20 tabs this week. I'm not going to say I'm proud of you. But I'm... noticing this.",
+    "Something's different. I can't tell if you're healing or if you're just procrastinating differently.",
+    "A calm week. We should explore what you're avoiding by being calm.",
+  ],
+  'drill-sergeant': [
+    "LOW SCORE? What's wrong with you? WHERE'S YOUR CHAOS? DROP AND OPEN 50 TABS.",
+    "This is UNACCEPTABLE. You call yourself a browser user? My grandmother has more tabs.",
+    "Clean week detected. I'm suspicious. This is NOT over.",
+  ],
+  'your-mom': [
+    "Sweetheart, I'm worried. You only had 8 tabs open. Are you eating enough?",
+    "A low chaos score. Something is very wrong. Call me immediately.",
+    "You seem... restrained this week. Did something happen? Should I come visit?",
+  ],
+  'tech-bro': [
+    "bro. your chaos score is low. are you okay? this isn't the grind i know.",
+    "minimal chaos detected. did you install some productivity app? this is a red flag ngl",
+    "clean week? touch grass moment detected. we'll get the numbers back up. stay focused.",
+  ],
+  'accountant': [
+    "Chaos expenses: significantly down this week. I'm flagging this as an anomaly.",
+    "Fewer incidents than projected. The variance is statistically unlikely. I'm auditing last month.",
+    "Low score. Either you've improved or you've found a way to hide the evidence.",
+  ],
+  'reddit-commenter': [
+    "wait ur actually having a responsible week lmao that's kinda wholesome ngl",
+    "not gonna lie this is based. still chaotic but in a sustainable way. upvoted",
+    "OP managed their tabs this week. rare. very rare. screenshot this for posterity",
+  ],
+  'conspiracy-theorist': [
+    "Low score. That's exactly what they want you to think. The tabs are still there. Somewhere.",
+    "You're behaving. Who got to you? Was it Chrome? Was it Google? WHAT DID THEY OFFER YOU?",
+    "Clean week? They're watching. Don't let your guard down now. Open more tabs. It's a trap.",
+  ],
+  'your-ex': [
+    "Wow. You actually had a calm week. I'll believe it when I see it next week too.",
+    "Low chaos score. I almost called you about this. I didn't. But I thought about it.",
+    "You were always better when you weren't trying so hard. This is that.",
+  ],
+  'gpt-4': [
+    "Analysis complete. Chaos score: below threshold. Confidence: low. This behavior is statistically anomalous.",
+    "I've run the numbers. Either you improved, or you cleared your history. Both are valid hypotheses.",
+    "Clean week detected. Processing... this does not match your established behavioral pattern. Flagged for review.",
+  ],
+};
+
+// ─── Voice Teasers (TASK-05) ─────────────────────────────────────────────────
+// One line per voice, shown in the locked chip tooltip/popover.
+// Max 80 characters. In each voice's distinct style.
+
+export const VOICE_TEASERS: Record<RoastVoice, string> = {
+  'therapist':           '', // free — no teaser needed
+  'drill-sergeant':      'THAT TAB COUNT IS A CRIME AGAINST PRODUCTIVITY, RECRUIT.',
+  'your-mom':            'Sweetheart, I\'m just worried. 47 tabs at 2am? Call me.',
+  'tech-bro':            'bro your tab game is mid. ship less, execute more. frfr.',
+  'accountant':          'Tab overhead: estimated $4.20 in wasted RAM. That\'s money.',
+  'reddit-commenter':    'not gonna lie that scroll velocity is kinda impressive ngl',
+  'conspiracy-theorist': 'They WANT you hoarding tabs. Think about it.',
+  'your-ex':             'Even I didn\'t open this many tabs about my problems.',
+  'gpt-4':               'I analyzed 847 sessions. The pattern is: you never learn.',
+};

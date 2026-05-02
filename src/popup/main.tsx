@@ -1,6 +1,6 @@
 import { render } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
-import { calculateShameScore, getShameTitle } from '../lib/scoring';
+import { calculateChaosScore, getChaosTitle } from '../lib/scoring';
 import { storage } from '../lib/storage';
 import { todayKey } from '../lib/date-key';
 import { isPro, isProPlus } from '../lib/license';
@@ -37,8 +37,8 @@ function Popup() {
     );
   }
 
-  const shameScore = calculateShameScore(stats);
-  const shameTitle = getShameTitle(shameScore);
+  const chaosScore = calculateChaosScore(stats);
+  const chaosTitle  = getChaosTitle(chaosScore);
 
   const TierBadge = () => {
     if (tier === 'pro-plus') return <span class="plus-badge">Pro+</span>;
@@ -80,14 +80,14 @@ function Popup() {
           <span class="stat-label">Late Night</span>
         </div>
         <div class="stat-item">
-          <span class="stat-value">{shameScore}</span>
-          <span class="stat-label">Shame</span>
+          <span class="stat-value">{chaosScore}</span>
+          <span class="stat-label">Chaos</span>
         </div>
       </div>
 
       {/* ── Shame title ────────────────────────────── */}
       <p class="shame-title-row">
-        <strong>{shameTitle}</strong>
+        <strong>{chaosTitle}</strong>
       </p>
 
       {/* ── Actions ────────────────────────────────── */}

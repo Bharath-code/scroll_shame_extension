@@ -1,3 +1,5 @@
+// ─── Types ────────────────────────────────────────────────────────────────────
+
 export interface DayData {
   peakTabs?: number;
   nightSessions?: number;
@@ -5,11 +7,11 @@ export interface DayData {
   longSessions?: number;
   spiralSessions?: number;
   totalScrollDistance?: number;
-  /** Count of tabs that remained untouched for > 7 days */
+  /** Count of tabs untouched for > 7 days */
   ghostTabs?: number;
   /** Count of rapid-backspace rage events (> 5 backspaces in 2 seconds) */
   backspaceRage?: number;
-  /** Total seconds spent deciding between tabs (tab switching time) */
+  /** Total seconds spent switching between tabs */
   tabDecisionTime?: number;
   /** Peak scroll velocity in px/sec for the day */
   peakVelocity?: number;
@@ -17,7 +19,9 @@ export interface DayData {
 
 export interface WeeklyStats extends DayData {}
 
-export function calculateShameScore(stats: DayData | null): number {
+// ─── Chaos Score ──────────────────────────────────────────────────────────────
+
+export function calculateChaosScore(stats: DayData | null): number {
   if (!stats) return 0;
 
   let score = 0;
@@ -43,23 +47,84 @@ export function calculateShameScore(stats: DayData | null): number {
   // Ghost tabs: 2 pts each, up to 10
   score += Math.min(Math.max(stats.ghostTabs || 0, 0) * 2, 10);
 
-  // Backspace rage: 3 pts each, up to 15
+  // Keyboard crimes: 3 pts each, up to 15
   score += Math.min(Math.max(stats.backspaceRage || 0, 0) * 3, 15);
 
   return Math.min(Math.round(score), 100);
 }
 
-/** Shame score → badge title */
-export function getShameTitle(score: number): string {
-  if (score >= 90) return 'Certified Internet Cryptid';
+/** @deprecated Use calculateChaosScore — retained for backward compatibility */
+export const calculateShameScore = calculateChaosScore;
+
+// ─── Chaos Title ──────────────────────────────────────────────────────────────
+
+/**
+ * Returns a badge/rank title for the given chaos score.
+ * Every tier is framed as a proud rank, never a pure judgment.
+ */
+export function getChaosTitle(score: number): string {
+  if (score >= 90) return 'Grand Chaos Architect';
   if (score >= 80) return 'Certified Chaos Agent';
   if (score >= 65) return 'Tab Hoarder Supreme';
-  if (score >= 50) return 'Casual Chaos Agent';
-  if (score >= 35) return 'Mild Chaos Agent';
-  if (score >= 20) return 'Scroll Apprentice';
-  if (score >= 10) return 'Mostly Innocent';
-  return 'Innocent Browser User';
+  if (score >= 50) return 'Chaos Enthusiast';
+  if (score >= 35) return 'Chaotically Curious';
+  if (score >= 20) return "Baby's First Chaos";
+  if (score >= 10) return 'Suspiciously Calm';
+  return 'We\'re Watching You';
 }
+
+/** @deprecated Use getChaosTitle */
+export const getShameTitle = getChaosTitle;
+
+// ─── Clean Week ───────────────────────────────────────────────────────────────
+
+/** True when the user had a suspiciously reasonable week (score < 20) */
+export function isCleanWeek(score: number): boolean {
+  return score < 20;
+}
+
+// ─── Score Delta ──────────────────────────────────────────────────────────────
+
+export interface ScoreDelta {
+  /** Positive = worse this week, negative = better */
+  delta: number;
+  label: string;
+  direction: 'up' | 'down' | 'flat';
+}
+
+/**
+ * Compares this week's score to last week's and returns a structured delta
+ * with human-readable copy ready to display.
+ */
+export function calculateScoreDelta(current: number, previous: number | null): ScoreDelta | null {
+  if (previous === null) return null;
+
+  const delta = current - previous;
+
+  if (Math.abs(delta) < 2) {
+    return {
+      delta: 0,
+      label: 'flat line. consistent chaos.',
+      direction: 'flat',
+    };
+  }
+
+  if (delta > 0) {
+    return {
+      delta,
+      label: `▲ ${delta} pts — getting worse. impressive.`,
+      direction: 'up',
+    };
+  }
+
+  return {
+    delta,
+    label: `▼ ${Math.abs(delta)} pts — suspiciously reasonable this week`,
+    direction: 'down',
+  };
+}
+
+// ─── Aggregation ──────────────────────────────────────────────────────────────
 
 /** Aggregates a list of daily records into a weekly summary */
 export function aggregateStats(dataList: DayData[]): WeeklyStats {
@@ -80,16 +145,16 @@ export function aggregateStats(dataList: DayData[]): WeeklyStats {
 
   return dataList.reduce<WeeklyStats>(
     (acc, data) => ({
-      peakTabs:          Math.max(acc.peakTabs || 0, data.peakTabs || 0),
-      nightSessions:     (acc.nightSessions || 0) + (data.nightSessions || 0),
-      quickClosures:     (acc.quickClosures || 0) + (data.quickClosures || 0),
-      longSessions:      (acc.longSessions || 0) + (data.longSessions || 0),
-      spiralSessions:    (acc.spiralSessions || 0) + (data.spiralSessions || 0),
+      peakTabs:            Math.max(acc.peakTabs || 0, data.peakTabs || 0),
+      nightSessions:       (acc.nightSessions || 0) + (data.nightSessions || 0),
+      quickClosures:       (acc.quickClosures || 0) + (data.quickClosures || 0),
+      longSessions:        (acc.longSessions || 0) + (data.longSessions || 0),
+      spiralSessions:      (acc.spiralSessions || 0) + (data.spiralSessions || 0),
       totalScrollDistance: (acc.totalScrollDistance || 0) + (data.totalScrollDistance || 0),
-      ghostTabs:         Math.max(acc.ghostTabs || 0, data.ghostTabs || 0),
-      backspaceRage:     (acc.backspaceRage || 0) + (data.backspaceRage || 0),
-      tabDecisionTime:   (acc.tabDecisionTime || 0) + (data.tabDecisionTime || 0),
-      peakVelocity:      Math.max(acc.peakVelocity || 0, data.peakVelocity || 0),
+      ghostTabs:           Math.max(acc.ghostTabs || 0, data.ghostTabs || 0),
+      backspaceRage:       (acc.backspaceRage || 0) + (data.backspaceRage || 0),
+      tabDecisionTime:     (acc.tabDecisionTime || 0) + (data.tabDecisionTime || 0),
+      peakVelocity:        Math.max(acc.peakVelocity || 0, data.peakVelocity || 0),
     }),
     {} as WeeklyStats,
   );

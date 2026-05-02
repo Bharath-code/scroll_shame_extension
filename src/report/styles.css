@@ -167,8 +167,8 @@ html, body {
   opacity: 0.88;
 }
 
-/* ─── Shame Score ──────────────────────────────────────────────────────────── */
-.shame-total {
+/* ─── Chaos Score — TASK-01 rename ────────────────────────────────────────── */
+.chaos-total {
   margin: 0.5rem 1.5rem 1rem;
   padding: 1rem;
   background: var(--dark);
@@ -176,6 +176,14 @@ html, body {
   border-radius: 2px;
   text-align: center;
   position: relative;
+}
+
+/* TASK-04: Clean week gets yellow accent instead of red */
+.chaos-total.clean {
+  border-color: rgba(255, 230, 0, 0.3);
+}
+.chaos-total.clean .total-score {
+  color: var(--yellow);
 }
 
 .total-label {
@@ -195,7 +203,6 @@ html, body {
   line-height: 1;
   color: var(--red);
   letter-spacing: -0.04em;
-  /* Slot machine reveal animation */
   animation: slotReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: 0.3s;
 }
@@ -210,12 +217,83 @@ html, body {
   opacity: 0.8;
 }
 
-/* Slot machine number reveal */
+/* TASK-03: Score delta ─────────────────────────────────────────────────────── */
+.score-delta {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  margin-top: 0.5rem;
+  letter-spacing: 0.04em;
+  opacity: 0.9;
+}
+.score-delta.direction-up   { color: var(--red);    }
+.score-delta.direction-down { color: #2ecc71;        }
+.score-delta.direction-flat { color: var(--yellow);  }
+
 @keyframes slotReveal {
   0%   { opacity: 0; transform: translateY(-24px) scale(0.85); filter: blur(4px); }
   60%  { opacity: 1; transform: translateY(4px) scale(1.04); filter: blur(0); }
   100% { transform: translateY(0) scale(1); }
 }
+
+/* TASK-05: Voice teaser popover ────────────────────────────────────────────── */
+.voice-chip-wrapper {
+  position: relative;
+}
+
+.voice-teaser-popover {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  background: var(--dark);
+  border: 1px solid var(--red);
+  border-radius: 2px;
+  padding: 0.65rem 0.75rem;
+  width: 220px;
+  box-shadow: 0 8px 24px rgba(255, 45, 45, 0.15);
+  animation: ssSlideUp 0.15s ease;
+}
+
+.teaser-line {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--white);
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+  font-style: italic;
+}
+
+.teaser-cta {
+  width: 100%;
+  padding: 0.4rem;
+  background: var(--red);
+  border: none;
+  border-radius: 2px;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.teaser-cta:hover { background: var(--red-dim); }
+
+/* Voice panel card */
+.voice-panel {
+  max-width: 400px;
+  width: 100%;
+  padding: 1rem 1.5rem;
+}
+
+@keyframes ssSlideUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0);   }
+}
+
+
 
 /* ─── Voice Selector ───────────────────────────────────────────────────────── */
 .voice-section {
