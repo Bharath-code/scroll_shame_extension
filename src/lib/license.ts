@@ -1,11 +1,13 @@
 import { storage } from './storage';
 
-export type LicenseTier = 'free' | 'pro';
+export type LicenseTier = 'free' | 'pro' | 'pro-plus';
 
 export interface LicenseStatus {
   tier: LicenseTier;
   purchasedAt?: string;
   licenseKey?: string;
+  /** ISO date string when Pro+ subscription renews */
+  subscriptionRenewsAt?: string;
 }
 
 export async function getLicenseStatus(): Promise<LicenseStatus> {
@@ -16,52 +18,83 @@ export async function setLicenseStatus(status: LicenseStatus): Promise<void> {
   return storage.setLicenseStatus(status);
 }
 
+/** True if user has Pro Base OR Pro+ */
 export async function isPro(): Promise<boolean> {
   try {
     const status = await getLicenseStatus();
-    return status.tier === 'pro';
+    return status.tier === 'pro' || status.tier === 'pro-plus';
   } catch (error) {
     console.error('[License] Failed to check license status:', error);
     return false;
   }
 }
 
+/** True only if user has Pro+ subscription */
+export async function isProPlus(): Promise<boolean> {
+  try {
+    const status = await getLicenseStatus();
+    return status.tier === 'pro-plus';
+  } catch (error) {
+    console.error('[License] Failed to check pro-plus status:', error);
+    return false;
+  }
+}
+
 export async function upgradeToPro(licenseKey: string): Promise<void> {
-  // Validate the license key before upgrading
-  if (getTierFromKey(licenseKey) !== 'pro') {
+  const tier = getTierFromKey(licenseKey);
+  if (tier === 'free') {
     throw new Error('Invalid license key');
   }
-  
+
   const status: LicenseStatus = {
-    tier: 'pro',
+    tier,
     purchasedAt: new Date().toISOString(),
-    licenseKey
+    licenseKey,
+  };
+  await setLicenseStatus(status);
+}
+
+export async function upgradeToProPlus(licenseKey: string): Promise<void> {
+  const renewsAt = new Date();
+  renewsAt.setMonth(renewsAt.getMonth() + 1);
+
+  const status: LicenseStatus = {
+    tier: 'pro-plus',
+    purchasedAt: new Date().toISOString(),
+    licenseKey,
+    subscriptionRenewsAt: renewsAt.toISOString(),
   };
   await setLicenseStatus(status);
 }
 
 export async function downgradeToFree(): Promise<void> {
-  const status: LicenseStatus = {
-    tier: 'free'
-  };
-  await setLicenseStatus(status);
+  await setLicenseStatus({ tier: 'free' });
 }
 
+/**
+ * Derives the license tier from a key.
+ * Format: XXXX-XXXX-XXXX-XXXX
+ * Keys starting with 'PP' (after stripping hyphens) are Pro+.
+ */
 export function getTierFromKey(key: string): LicenseTier {
   if (!key) return 'free';
-  
-  // Basic validation: key should be 16 characters alphanumeric with hyphens
-  // Format: XXXX-XXXX-XXXX-XXXX
+
   const keyPattern = /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
   if (!keyPattern.test(key)) return 'free';
-  
-  // Simple checksum validation (sum of character codes mod 10 should equal last digit)
+
   const cleanKey = key.replace(/-/g, '');
-  const sum = cleanKey.slice(0, -1).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+
+  // Checksum: sum of char codes (excluding last char) mod 10 === last digit
+  const sum = cleanKey
+    .slice(0, -1)
+    .split('')
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const expectedChecksum = sum % 10;
   const actualChecksum = parseInt(cleanKey.slice(-1), 10);
-  
   if (expectedChecksum !== actualChecksum) return 'free';
-  
+
+  // Pro+ keys start with 'PP'
+  if (cleanKey.startsWith('PP')) return 'pro-plus';
+
   return 'pro';
 }

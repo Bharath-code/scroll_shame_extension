@@ -1,44 +1,59 @@
-import { isPro } from './license';
+import { isPro, isProPlus } from './license';
 
 export type FeatureName =
   | 'allRoastVoices'
   | 'customTiming'
   | 'exportHighRes'
   | 'historicalData90Days'
-  | 'shameScoreHistory';
+  | 'shameScoreHistory'
+  | 'allNineVoices'
+  | 'interventionModals'
+  | 'predictionEngine'
+  | 'patternAnalysis'
+  | 'shameStreak'
+  | 'instantReplay';
 
-const FEATURE_TIER_MAP: Record<FeatureName, 'free' | 'pro'> = {
-  allRoastVoices: 'pro',
-  customTiming: 'pro',
-  exportHighRes: 'pro',
-  historicalData90Days: 'pro',
-  shameScoreHistory: 'pro'
+export type FeatureTier = 'free' | 'pro' | 'pro-plus';
+
+const FEATURE_TIER_MAP: Record<FeatureName, FeatureTier> = {
+  // Pro Base features ($15 one-time)
+  allRoastVoices:          'pro',
+  customTiming:            'pro',
+  exportHighRes:           'pro',
+  historicalData90Days:    'pro',
+  shameScoreHistory:       'pro',
+  allNineVoices:           'pro-plus',
+
+  // Pro+ subscription features ($4.99/mo)
+  interventionModals:      'pro-plus',
+  predictionEngine:        'pro-plus',
+  patternAnalysis:         'pro-plus',
+  shameStreak:             'pro-plus',
+  instantReplay:           'pro-plus',
 };
 
 export async function canAccess(feature: FeatureName): Promise<boolean> {
-  const pro = await isPro();
-  if (pro) return true;
+  const tier = FEATURE_TIER_MAP[feature];
 
-  const requiredTier = FEATURE_TIER_MAP[feature];
-  return requiredTier === 'free';
+  if (tier === 'free') return true;
+  if (tier === 'pro') return await isPro();       // pro or pro-plus both qualify
+  if (tier === 'pro-plus') return await isProPlus();
+
+  return false;
 }
 
 export async function getAccessibleFeatures(): Promise<FeatureName[]> {
-  const pro = await isPro();
+  const [pro, proPlus] = await Promise.all([isPro(), isProPlus()]);
 
-  const allFeatures: FeatureName[] = [
-    'allRoastVoices',
-    'customTiming',
-    'exportHighRes',
-    'historicalData90Days',
-    'shameScoreHistory'
-  ];
-
-  if (pro) return allFeatures;
-
-  return allFeatures.filter(f => FEATURE_TIER_MAP[f] === 'free');
+  return (Object.keys(FEATURE_TIER_MAP) as FeatureName[]).filter((feature) => {
+    const tier = FEATURE_TIER_MAP[feature];
+    if (tier === 'free') return true;
+    if (tier === 'pro') return pro;
+    if (tier === 'pro-plus') return proPlus;
+    return false;
+  });
 }
 
-export function getFeatureTier(feature: FeatureName): 'free' | 'pro' {
+export function getFeatureTier(feature: FeatureName): FeatureTier {
   return FEATURE_TIER_MAP[feature];
 }

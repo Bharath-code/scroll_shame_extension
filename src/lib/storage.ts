@@ -1,5 +1,5 @@
 import type { DayData } from './scoring';
-import type { LicenseStatus } from './license';
+import type { LicenseStatus, LicenseTier } from './license';
 import type { RoastVoice } from './roast-pools';
 import { keyForDate } from './date-key';
 

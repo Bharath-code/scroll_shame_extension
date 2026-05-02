@@ -1,36 +1,35 @@
 import { render } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
-import { isPro, upgradeToPro } from '../lib/license';
+import { isPro, isProPlus, upgradeToPro, upgradeToProPlus } from '../lib/license';
+import type { ExtensionSettings } from '../lib/storage';
+import type { RoastVoice } from '../lib/roast-pools';
+import { VOICE_LABELS, PRO_VOICES, PRO_PLUS_VOICES } from '../lib/roast-pools';
 
-const PRO_VOICES = ['therapist', 'drill-sergeant', 'your-mom', 'tech-bro', 'accountant'];
-const FREE_VOICES = ['therapist'];
+const DEFAULT_SETTINGS: ExtensionSettings = {
+  notificationTime:    'monday-9am',
+  trackTabCount:       true,
+  trackScrollVelocity: true,
+  trackLateNight:      true,
+  trackTabChurn:       true,
+  trackSessionLength:  true,
+  roastVoice:          'therapist',
+};
 
 function Options() {
-  const [settings, setSettings] = useState({
-    notificationTime: 'monday-9am',
-    trackTabCount: true,
-    trackScrollVelocity: true,
-    trackLateNight: true,
-    trackTabChurn: true,
-    trackSessionLength: true,
-    roastVoice: 'therapist'
-  });
+  const [settings,    setSettings   ] = useState<ExtensionSettings>(DEFAULT_SETTINGS);
+  const [tier,        setTier       ] = useState<'free' | 'pro' | 'pro-plus'>('free');
+  const [saved,       setSaved      ] = useState(false);
+  const [licenseKey,  setLicenseKey ] = useState('');
+  const [keyError,    setKeyError   ] = useState('');
+  const [keySuccess,  setKeySuccess ] = useState(false);
 
-  const [isProUser, setIsProUser] = useState(false);
-  const [saved, setSaved] = useState(false);
+  useEffect(() => { loadAll(); }, []);
 
-  useEffect(() => {
-    loadSettings();
-  }, []);
-
-  async function loadSettings() {
-    const pro = await isPro();
-    setIsProUser(pro);
-
+  async function loadAll() {
+    const [pro, proPlus] = await Promise.all([isPro(), isProPlus()]);
+    setTier(proPlus ? 'pro-plus' : pro ? 'pro' : 'free');
     chrome.storage.local.get('settings', (result) => {
-      if (result.settings) {
-        setSettings(result.settings);
-      }
+      if (result.settings) setSettings({ ...DEFAULT_SETTINGS, ...result.settings });
     });
   }
 
@@ -41,118 +40,163 @@ function Options() {
     });
   }
 
+  async function handleActivateLicense() {
+    setKeyError('');
+    setKeySuccess(false);
+    const key = licenseKey.trim().toUpperCase();
+    if (!key) { setKeyError('Enter your license key.'); return; }
+    try {
+      // Try Pro+ first, then Pro
+      try { await upgradeToProPlus(key); setTier('pro-plus'); }
+      catch { await upgradeToPro(key); setTier(tier === 'free' ? 'pro' : tier); }
+      setKeySuccess(true);
+      setLicenseKey('');
+    } catch {
+      setKeyError('Invalid license key. Check and try again.');
+    }
+  }
+
+  function updateSetting<K extends keyof ExtensionSettings>(key: K, value: ExtensionSettings[K]) {
+    setSettings(prev => ({ ...prev, [key]: value }));
+  }
+
+  const isPaid = tier !== 'free';
+  const isPlus = tier === 'pro-plus';
+  const allowedVoices: RoastVoice[] = isPlus ? PRO_PLUS_VOICES : isPaid ? PRO_VOICES : ['therapist'];
+
+  const ALL_VOICES: { voice: RoastVoice; tier: 'free' | 'pro' | 'pro-plus' }[] = [
+    { voice: 'therapist',           tier: 'free'     },
+    { voice: 'drill-sergeant',      tier: 'pro'      },
+    { voice: 'your-mom',            tier: 'pro'      },
+    { voice: 'tech-bro',            tier: 'pro'      },
+    { voice: 'accountant',          tier: 'pro'      },
+    { voice: 'reddit-commenter',    tier: 'pro-plus' },
+    { voice: 'conspiracy-theorist', tier: 'pro-plus' },
+    { voice: 'your-ex',             tier: 'pro-plus' },
+    { voice: 'gpt-4',               tier: 'pro-plus' },
+  ];
+
+  const TierBadge = () => {
+    if (tier === 'pro-plus') return <span class="badge plus">Pro+</span>;
+    if (tier === 'pro')      return <span class="badge pro">Pro</span>;
+    return <span class="badge free">Free</span>;
+  };
+
   return (
     <div class="options-container">
       <header class="options-header">
-        <h1>ScrollShame Settings {!isProUser && <span class="free-badge">Free</span>}{isProUser && <span class="pro-badge">Pro</span>}</h1>
+        <h1>ScrollShame <TierBadge /></h1>
+        <p class="tagline">Your browser knows what you did.</p>
       </header>
 
-      {!isProUser && (
-        <div class="upgrade-banner">
-          <p>🔓 Unlock all 5 roast voices + watermark-free exports</p>
+      {/* ── Upgrade Banners ─────────────────────────────────────── */}
+      {!isPaid && (
+        <div class="upgrade-banner yellow">
+          <div>
+            <p class="upgrade-title">🔓 Upgrade to Pro Base — $15</p>
+            <p class="upgrade-desc">All 5 roast voices · Unlimited history · Global rankings</p>
+          </div>
           <button class="btn-upgrade" onClick={() => window.open('https://polar.sh/scrollshame', '_blank')}>
-            Upgrade to Pro - $1.99
+            $15
+          </button>
+        </div>
+      )}
+      {isPaid && !isPlus && (
+        <div class="upgrade-banner red">
+          <div>
+            <p class="upgrade-title">⚡ Upgrade to Pro+ — $4.99/mo</p>
+            <p class="upgrade-desc">All 9 voices · Live interventions · Prediction engine</p>
+          </div>
+          <button class="btn-upgrade" onClick={() => window.open('https://polar.sh/scrollshame/plus', '_blank')}>
+            $4.99/mo
           </button>
         </div>
       )}
 
+      {/* ── License Key ─────────────────────────────────────────── */}
       <section class="settings-section">
-        <h2>Tracking</h2>
-        <div class="setting-item">
-          <label>
-            <input
-              type="checkbox"
-              checked={settings.trackTabCount}
-              onChange={(e) => setSettings({...settings, trackTabCount: e.target.checked})}
-            />
-            Track tab count
-          </label>
+        <h2>License</h2>
+        <div class="license-row">
+          <input
+            class="license-input"
+            type="text"
+            placeholder="XXXX-XXXX-XXXX-XXXX"
+            value={licenseKey}
+            onInput={(e) => setLicenseKey((e.target as HTMLInputElement).value)}
+          />
+          <button class="btn-activate" onClick={handleActivateLicense}>Activate</button>
         </div>
-        <div class="setting-item">
-          <label>
-            <input
-              type="checkbox"
-              checked={settings.trackScrollVelocity}
-              onChange={(e) => setSettings({...settings, trackScrollVelocity: e.target.checked})}
-            />
-            Track scroll velocity
-          </label>
-        </div>
-        <div class="setting-item">
-          <label>
-            <input
-              type="checkbox"
-              checked={settings.trackLateNight}
-              onChange={(e) => setSettings({...settings, trackLateNight: e.target.checked})}
-            />
-            Track late-night sessions
-          </label>
-        </div>
-        <div class="setting-item">
-          <label>
-            <input
-              type="checkbox"
-              checked={settings.trackTabChurn}
-              onChange={(e) => setSettings({...settings, trackTabChurn: e.target.checked})}
-            />
-            Track tab churn
-          </label>
-        </div>
-        <div class="setting-item">
-          <label>
-            <input
-              type="checkbox"
-              checked={settings.trackSessionLength}
-              onChange={(e) => setSettings({...settings, trackSessionLength: e.target.checked})}
-            />
-            Track session length
-          </label>
-        </div>
+        {keyError   && <p class="hint error">{keyError}</p>}
+        {keySuccess  && <p class="hint success">✓ License activated! Enjoy your chaos.</p>}
       </section>
 
+      {/* ── Roast Voice ─────────────────────────────────────────── */}
       <section class="settings-section">
         <h2>Roast Voice</h2>
-        <select
-          value={settings.roastVoice}
-          onChange={(e) => setSettings({...settings, roastVoice: e.target.value})}
-          class="select-input"
-          disabled={!isProUser && settings.roastVoice !== 'therapist'}
-        >
-          <option value="therapist">The Therapist (Free)</option>
-          {isProUser ? (
-            <>
-              <option value="drill-sergeant">The Drill Sergeant</option>
-              <option value="your-mom">Your Mom</option>
-              <option value="tech-bro">Tech Bro</option>
-              <option value="accountant">The Accountant</option>
-            </>
-          ) : (
-            <>
-              <option value="drill-sergeant" disabled>The Drill Sergeant 🔒 (Pro)</option>
-              <option value="your-mom" disabled>Your Mom 🔒 (Pro)</option>
-              <option value="tech-bro" disabled>Tech Bro 🔒 (Pro)</option>
-              <option value="accountant" disabled>The Accountant 🔒 (Pro)</option>
-            </>
-          )}
-        </select>
-        {!isProUser && <p class="hint">Upgrade to unlock all voices!</p>}
+        <div class="voice-list">
+          {ALL_VOICES.map(({ voice, tier: reqTier }) => {
+            const locked = !allowedVoices.includes(voice);
+            const active = settings.roastVoice === voice;
+            return (
+              <label
+                key={voice}
+                class={`voice-option${active ? ' active' : ''}${locked ? ' locked' : ''}`}
+                onClick={() => {
+                  if (locked) {
+                    window.open('https://polar.sh/scrollshame', '_blank');
+                  } else {
+                    updateSetting('roastVoice', voice);
+                  }
+                }}
+              >
+                <span class="voice-name">{VOICE_LABELS[voice]}</span>
+                {reqTier !== 'free' && (
+                  <span class={`voice-tier-badge ${reqTier}`}>
+                    {reqTier === 'pro-plus' ? 'Pro+' : 'Pro'}
+                  </span>
+                )}
+                {active && <span class="voice-active-dot" />}
+              </label>
+            );
+          })}
+        </div>
       </section>
 
+      {/* ── Tracking Toggles ────────────────────────────────────── */}
+      <section class="settings-section">
+        <h2>Tracking</h2>
+        {([
+          ['trackTabCount',       'Tab count'],
+          ['trackScrollVelocity', 'Scroll velocity'],
+          ['trackLateNight',      'Late-night sessions'],
+          ['trackTabChurn',       'Tab churn'],
+          ['trackSessionLength',  'Session length'],
+        ] as const).map(([key, label]) => (
+          <div key={key} class="setting-item">
+            <label class="toggle-label">
+              <span>{label}</span>
+              <div class={`toggle${settings[key] ? ' on' : ''}`}
+                onClick={() => updateSetting(key, !settings[key] as any)}
+              >
+                <div class="toggle-thumb" />
+              </div>
+            </label>
+          </div>
+        ))}
+      </section>
+
+      {/* ── Save ────────────────────────────────────────────────── */}
       <div class="actions">
-        <button class="btn-primary" onClick={handleSave}>
-          Save Settings
-        </button>
-        {saved && <span class="saved-msg">Saved!</span>}
+        <button class="btn-primary" onClick={handleSave}>Save Settings</button>
+        {saved && <span class="saved-msg">✓ Saved</span>}
       </div>
 
       <footer class="options-footer">
-        <p>Data is stored locally. Nothing leaves your browser.</p>
+        <p>All data is stored locally in your browser. Nothing is ever transmitted.</p>
       </footer>
     </div>
   );
 }
 
 const root = document.getElementById('app');
-if (root) {
-  render(<Options />, root);
-}
+if (root) render(<Options />, root);
