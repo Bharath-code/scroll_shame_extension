@@ -1,5 +1,5 @@
 import type { DayData } from './scoring';
-import type { LicenseStatus, LicenseTier } from './license';
+import type { LicenseStatus } from './license';
 import type { RoastVoice } from './roast-pools';
 import { keyForDate } from './date-key';
 
@@ -15,6 +15,10 @@ export interface StorageAdapter {
   getLastWeekScore(): Promise<number | null>;
   /** Persists the chaos score for the current ISO week. */
   saveWeekScore(score: number): Promise<void>;
+  /** Returns current chaos streak (consecutive weeks with a report opened). */
+  getChaosStreak(): Promise<number>;
+  /** Increments streak if first open this week, resets if a week was missed. Returns new streak. */
+  updateStreak(): Promise<number>;
 }
 
 const DEFAULT_LICENSE: LicenseStatus = {
@@ -156,6 +160,45 @@ export class ChromeStorageAdapter implements StorageAdapter {
       chrome.storage.local.set({ [key]: score }, () => {
         if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
         else resolve();
+      });
+    });
+  }
+
+  // ─── Streak (TASK-11) ──────────────────────────────────────────────────
+
+  private STREAK_KEY         = 'chaos-streak-count';
+  private STREAK_LAST_WEEK   = 'chaos-streak-last-week';
+
+  async getChaosStreak(): Promise<number> {
+    return new Promise(resolve => {
+      chrome.storage.local.get(this.STREAK_KEY, r =>
+        resolve(typeof r[this.STREAK_KEY] === 'number' ? r[this.STREAK_KEY] : 0)
+      );
+    });
+  }
+
+  async updateStreak(): Promise<number> {
+    const currentWeek = this.isoWeekKey(new Date());
+
+    return new Promise(resolve => {
+      chrome.storage.local.get([this.STREAK_KEY, this.STREAK_LAST_WEEK], result => {
+        const lastWeek    = result[this.STREAK_LAST_WEEK] as string | undefined;
+        const streak      = (result[this.STREAK_KEY] as number) || 0;
+
+        // Already counted this week — don't double-increment
+        if (lastWeek === currentWeek) {
+          resolve(streak);
+          return;
+        }
+
+        // Check if last opened week was the immediately previous ISO week
+        const prevWeek = this.isoWeekKey(new Date(Date.now() - 7 * 86_400_000));
+        const newStreak = lastWeek === prevWeek ? streak + 1 : 1;
+
+        chrome.storage.local.set({
+          [this.STREAK_KEY]:       newStreak,
+          [this.STREAK_LAST_WEEK]: currentWeek,
+        }, () => resolve(newStreak));
       });
     });
   }

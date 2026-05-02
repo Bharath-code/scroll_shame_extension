@@ -56,6 +56,16 @@ function chromeSet(data: Record<string, unknown>): Promise<void> {
   );
 }
 
+/** Returns milestone streak copy, or null if no milestone */
+function getStreakMilestone(streak: number): string | null {
+  if (streak === 4)  return 'One month of chaos. Therapy would be cheaper.';
+  if (streak === 8)  return 'Two months of this. Your browser is keeping a file.';
+  if (streak === 12) return 'Quarterly chaos review. We should talk.';
+  if (streak === 26) return 'Half a year. You\'re a founding member of your own problem.';
+  if (streak === 52) return 'One full year. Your browser is writing a memoir.';
+  return null;
+}
+
 /** Returns the most extreme stat for dynamic tweet copy */
 function getMostExtremeStat(stats: DayData | null): { label: string; value: number } | null {
   if (!stats) return null;
@@ -114,6 +124,7 @@ function Report() {
   const [delta,         setDelta        ] = useState<ScoreDelta | null>(null);
   const [hoveredVoice,  setHoveredVoice ] = useState<RoastVoice | null>(null);
   const [recentShare,   setRecentShare  ] = useState(false);
+  const [streak,        setStreak       ] = useState(0);
 
   useEffect(() => { load(); }, []);
 
@@ -133,11 +144,14 @@ function Report() {
       const aggregated = aggregateStats(allData);
       setStats(aggregated);
 
-      // Score delta
       const chaosScore   = calculateChaosScore(aggregated);
       const prevScore    = await storage.getLastWeekScore();
       setDelta(calculateScoreDelta(chaosScore, prevScore));
       await storage.saveWeekScore(chaosScore);
+
+      // TASK-11: Streak
+      const newStreak = await storage.updateStreak();
+      setStreak(newStreak);
 
       // Voice
       const settings = await storage.getSettings();
@@ -266,6 +280,116 @@ function Report() {
     setRecentShare(true);
   }, [stats]);
 
+  // ─── Chaos Certificate — TASK-10 ─────────────────────────────────────────
+  const downloadCertificate = useCallback(() => {
+    if (!stats) return;
+    const score   = calculateChaosScore(stats);
+    const title   = getChaosTitle(score);
+    const gold    = isPlus;  // Chaos Pass → gold accent; Pro → red accent
+    const accent  = gold ? '#f5a623' : '#ff2d2d';
+    const dimAccent = gold ? '#b37a18' : '#aa1f1f';
+
+    const W = 1200, H = 850;
+    const canvas = document.createElement('canvas');
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d')!;
+
+    // Background
+    ctx.fillStyle = '#0e0e0e';
+    ctx.fillRect(0, 0, W, H);
+
+    // Border frame
+    ctx.strokeStyle = accent;
+    ctx.lineWidth   = 6;
+    ctx.strokeRect(24, 24, W - 48, H - 48);
+    ctx.strokeStyle = dimAccent;
+    ctx.lineWidth   = 1.5;
+    ctx.strokeRect(36, 36, W - 72, H - 72);
+
+    // Corner accents
+    const cornerSize = 32;
+    ctx.strokeStyle = accent;
+    ctx.lineWidth   = 4;
+    [[48, 48], [W - 48, 48], [48, H - 48], [W - 48, H - 48]].forEach(([x, y]) => {
+      ctx.beginPath();
+      ctx.moveTo(x, y - cornerSize); ctx.lineTo(x, y); ctx.lineTo(x + cornerSize, y);
+      ctx.stroke();
+    });
+
+    // Top label
+    ctx.font      = 'bold 18px monospace';
+    ctx.fillStyle = dimAccent;
+    ctx.textAlign = 'center';
+    ctx.letterSpacing = '0.2em';
+    ctx.fillText('SCROLL SHAME · OFFICIAL RECORD', W / 2, 90);
+
+    // Title
+    ctx.font      = `bold 64px monospace`;
+    ctx.fillStyle = accent;
+    ctx.fillText('CERTIFICATE', W / 2, 200);
+    ctx.font      = `bold 48px monospace`;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('OF CHAOS', W / 2, 265);
+
+    // Divider
+    ctx.beginPath();
+    ctx.strokeStyle = accent;
+    ctx.lineWidth   = 1;
+    ctx.setLineDash([8, 6]);
+    ctx.moveTo(120, 300); ctx.lineTo(W - 120, 300);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Body copy
+    ctx.font      = '22px monospace';
+    ctx.fillStyle = '#888888';
+    ctx.fillText('This is to certify that the holder has achieved a', W / 2, 360);
+
+    // Score
+    ctx.font      = `bold 120px monospace`;
+    ctx.fillStyle = accent;
+    ctx.fillText(`${score}`, W / 2, 500);
+    ctx.font      = 'bold 26px monospace';
+    ctx.fillStyle = '#aaaaaa';
+    ctx.fillText('/ 100', W / 2 + 80, 480);
+
+    // Rank title
+    ctx.font      = `bold 38px monospace`;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(title.toUpperCase(), W / 2, 575);
+
+    // Date
+    const dateStr = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    ctx.font      = '18px monospace';
+    ctx.fillStyle = '#555555';
+    ctx.fillText(`Week ending ${dateStr}`, W / 2, 635);
+
+    // Footer
+    ctx.beginPath();
+    ctx.strokeStyle = dimAccent;
+    ctx.lineWidth   = 1;
+    ctx.setLineDash([6, 5]);
+    ctx.moveTo(120, 680); ctx.lineTo(W - 120, 680);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.font      = '16px monospace';
+    ctx.fillStyle = '#444444';
+    ctx.fillText('Awarded by ScrollShame · scrollshame.com', W / 2, 720);
+
+    if (gold) {
+      ctx.font      = 'bold 14px monospace';
+      ctx.fillStyle = '#f5a623';
+      ctx.fillText('✦ CHAOS PASS EDITION ✦', W / 2, 760);
+    }
+
+    // Download
+    const link  = document.createElement('a');
+    link.href   = canvas.toDataURL('image/png');
+    link.download = `chaos-certificate-${score}.png`;
+    link.click();
+  }, [stats, isPlus]);
+
   async function dismissUpgrade() {
     const until = new Date();
     until.setDate(until.getDate() + UPGRADE_SNOOZE_DAYS);
@@ -282,10 +406,11 @@ function Report() {
     );
   }
 
-  const chaosScore  = calculateChaosScore(stats);
-  const chaosTitle  = getChaosTitle(chaosScore);
-  const cleanWeek   = isCleanWeek(chaosScore);
-  const upgradeCopy = getUpgradeCopy(chaosScore, recentShare);
+  const chaosScore    = calculateChaosScore(stats);
+  const chaosTitle    = getChaosTitle(chaosScore);
+  const cleanWeek     = isCleanWeek(chaosScore);
+  const upgradeCopy   = getUpgradeCopy(chaosScore, recentShare);
+  const streakMilestone = getStreakMilestone(streak);
 
   const ALL_VOICES: RoastVoice[] = [
     'therapist', 'drill-sergeant', 'your-mom', 'tech-bro', 'accountant',
@@ -312,6 +437,10 @@ function Report() {
               <p class="week-label">
                 Weekly Receipt — {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
               </p>
+              {/* TASK-11: Streak display (hide on week 1) */}
+              {streak > 1 && (
+                <p class="streak-badge">🔥 Week {streak} of Chaos</p>
+              )}
             </div>
             {!isPaid && <span class="free-badge">Free</span>}
           </header>
@@ -373,6 +502,11 @@ function Report() {
               <p class={`score-delta direction-${delta.direction}`}>
                 {delta.label}
               </p>
+            )}
+
+            {/* TASK-11: Milestone streak copy */}
+            {streakMilestone && (
+              <p class="streak-milestone">{streakMilestone}</p>
             )}
           </div>
 
@@ -452,6 +586,16 @@ function Report() {
           Post to X ↗
         </button>
       </div>
+
+      {/* TASK-10: Chaos Certificate — shown at score >= 80 */}
+      {chaosScore >= 80 && (
+        <div class="certificate-row">
+          <button class="btn-certificate" onClick={downloadCertificate}>
+            🏆 Download Chaos Certificate
+          </button>
+          {isPlus && <span class="cert-gold-label">✦ Gold Edition</span>}
+        </div>
+      )}
 
       {!isPaid && (
         <p class="free-notice">Free — upgrade to export without footer</p>

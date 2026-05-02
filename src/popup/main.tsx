@@ -7,21 +7,29 @@ import { isPro, isProPlus } from '../lib/license';
 
 import './styles.css';
 
+// TASK-06: tier type updated
+type DisplayTier = 'free' | 'pro' | 'chaos-pass';
+
 function Popup() {
   const [stats,   setStats  ] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [tier,    setTier   ] = useState<'free' | 'pro' | 'pro-plus'>('free');
+  const [tier,    setTier   ] = useState<DisplayTier>('free');
+  const [streak,  setStreak ] = useState(0);
 
   useEffect(() => { loadStats(); }, []);
 
   async function loadStats() {
     try {
       const [pro, proPlus] = await Promise.all([isPro(), isProPlus()]);
-      setTier(proPlus ? 'pro-plus' : pro ? 'pro' : 'free');
+      setTier(proPlus ? 'chaos-pass' : pro ? 'pro' : 'free');
 
       const today = todayKey(new Date());
       const data  = await storage.getDaily(today);
       setStats(data);
+
+      // TASK-11: Load streak for popup display
+      const s = await storage.getChaosStreak();
+      setStreak(s);
     } catch (err) {
       console.error('[ScrollShame] Popup failed to load:', err);
     } finally {
@@ -30,19 +38,16 @@ function Popup() {
   }
 
   if (loading) {
-    return (
-      <div class="popup-container loading">
-        loading...
-      </div>
-    );
+    return <div class="popup-container loading">loading...</div>;
   }
 
   const chaosScore = calculateChaosScore(stats);
-  const chaosTitle  = getChaosTitle(chaosScore);
+  const chaosTitle = getChaosTitle(chaosScore);
 
+  // TASK-06: Chaos Pass badge replaces Pro+
   const TierBadge = () => {
-    if (tier === 'pro-plus') return <span class="plus-badge">Pro+</span>;
-    if (tier === 'pro')      return <span class="pro-badge">Pro</span>;
+    if (tier === 'chaos-pass') return <span class="plus-badge">Chaos Pass</span>;
+    if (tier === 'pro')        return <span class="pro-badge">Pro</span>;
     return <span class="free-badge">Free</span>;
   };
 
@@ -56,20 +61,20 @@ function Popup() {
         <TierBadge />
       </header>
 
-      {/* ── Upgrade banner (free only) ─────────────── */}
+      {/* ── Upgrade banner — TASK-07 new copy (free only) ── */}
       {tier === 'free' && (
         <div class="upgrade-banner">
-          <p>🔓 Unlock all 5 roast voices</p>
+          <p>4 roasters. 1 unlocked. You're only hearing the polite one.</p>
           <button
             class="btn-upgrade-small"
             onClick={() => window.open('https://polar.sh/scrollshame', '_blank')}
           >
-            $15
+            $12
           </button>
         </div>
       )}
 
-      {/* ── Stats grid ─────────────────────────────── */}
+      {/* ── Stats grid — TASK-11 streak as 4th stat ─────── */}
       <div class="stats-grid">
         <div class="stat-item">
           <span class="stat-value">{stats?.peakTabs ?? 0}</span>
@@ -83,9 +88,13 @@ function Popup() {
           <span class="stat-value">{chaosScore}</span>
           <span class="stat-label">Chaos</span>
         </div>
+        <div class="stat-item">
+          <span class="stat-value">{streak > 0 ? `${streak}🔥` : '—'}</span>
+          <span class="stat-label">Streak</span>
+        </div>
       </div>
 
-      {/* ── Shame title ────────────────────────────── */}
+      {/* ── Chaos title ─────────────────────────────── */}
       <p class="shame-title-row">
         <strong>{chaosTitle}</strong>
       </p>

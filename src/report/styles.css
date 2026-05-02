@@ -101,6 +101,29 @@ html, body {
   margin-top: 0.35rem;
 }
 
+/* TASK-11: Streak badge in report header */
+.streak-badge {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--yellow);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 0.25rem;
+  opacity: 0.85;
+}
+
+/* TASK-11: Milestone copy below delta */
+.streak-milestone {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--yellow);
+  font-style: italic;
+  margin-top: 0.4rem;
+  opacity: 0.8;
+  border-top: 1px solid rgba(255, 230, 0, 0.15);
+  padding-top: 0.4rem;
+}
+
 /* ─── Divider ──────────────────────────────────────────────────────────────── */
 .card-divider {
   height: 1px;
@@ -483,4 +506,41 @@ html, body {
 .btn-share.copied {
   border-color: #2ecc71;
   color: #2ecc71;
+}
+
+/* ─── Chaos Certificate (TASK-10) ──────────────────────────────────────────── */
+.certificate-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.btn-certificate {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  background: transparent;
+  border: 1px solid #f5a623;
+  border-radius: 2px;
+  color: #f5a623;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-certificate:hover {
+  background: rgba(245, 166, 35, 0.1);
+}
+
+.cert-gold-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: #f5a623;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  opacity: 0.75;
 }
