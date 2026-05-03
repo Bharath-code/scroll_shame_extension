@@ -106,17 +106,17 @@ export function FeatureBreakdown() {
 
       <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-      {/* Roast Remix & Clean Week */}
+      {/* Aggressive Mode */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
         <div className="flex flex-col gap-6">
           <div className="inline-flex items-center gap-2 text-rose-500 font-mono text-sm tracking-tight">
-            <Fire size={16} /> 03 / Pro Features
+            <Fire size={16} /> 03 / Chaos Pass Exclusive
           </div>
           <h3 className="text-4xl md:text-5xl font-bold tracking-tighter text-zinc-100">
-            Roast Remix <span className="text-zinc-500">& Clean Week.</span>
+            Aggressive <span className="text-zinc-500">Mode.</span>
           </h3>
           <p className="text-lg text-zinc-400 leading-relaxed max-w-[45ch]">
-            Get all 5 voices to comment on the same disaster simultaneously with **Roast Remix**. And if you actually behave? **Clean Week Mode** ensures the celebration is just as unhinged.
+            For $4.99/mo, we take the kid gloves off. **Tab Title Hijacking** guilt-trips you when you abandon tabs. **OS-Level Harassment** blows up your notifications when you spiral. And if you doomscroll for 5 minutes straight? We literally hijack your screen and force you to **Touch Grass**.
           </p>
         </div>
 
@@ -126,26 +126,25 @@ export function FeatureBreakdown() {
           viewport={{ once: true }}
           className="relative aspect-square md:aspect-video rounded-[2.5rem] bg-zinc-900/40 border border-white/5 p-8 flex flex-col gap-4 overflow-hidden group"
         >
-          <div className="flex flex-col gap-3">
-            {[
-              { name: "Therapist", text: "I'm noticing a pattern here...", color: "text-zinc-400" },
-              { name: "Drill Sergeant", text: "UNACCEPTABLE TAB COUNT!", color: "text-rose-500" },
-              { name: "Your Mom", text: "I'm not angry, just disappointed.", color: "text-zinc-500" }
-            ].map((r, i) => (
-              <motion.div 
-                key={i}
-                initial={{ x: -20, opacity: 0 }}
-                whileInView={{ x: 0, opacity: 1 }}
-                transition={{ delay: i * 0.2 }}
-                className="bg-zinc-950/50 border border-white/5 p-3 rounded-xl flex flex-col gap-1"
-              >
-                <span className={cn("text-[10px] font-bold uppercase tracking-widest", r.color)}>{r.name}</span>
-                <p className="text-xs text-zinc-300 italic">"{r.text}"</p>
-              </motion.div>
-            ))}
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1533460004989-cef01064af7e?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-40 group-hover:opacity-80 transition-opacity duration-700" />
+          <div className="absolute inset-0 bg-black/60" />
+          
+          <div className="relative z-10 flex flex-col h-full items-center justify-center gap-4">
+            <motion.div 
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              className="bg-black/80 backdrop-blur-md border border-rose-500/50 p-6 rounded-2xl flex flex-col items-center gap-2 max-w-sm text-center shadow-2xl"
+            >
+              <Fire size={32} className="text-rose-500 mb-2" weight="duotone" />
+              <h4 className="text-xl font-bold text-white tracking-tight">TOUCH GRASS.</h4>
+              <p className="text-sm text-zinc-300">
+                You have been scrolling for 5 minutes. You have 10 seconds to contemplate your life choices before your browser unlocks.
+              </p>
+            </motion.div>
           </div>
-          <div className="absolute bottom-6 right-8 bg-rose-500/10 border border-rose-500/20 px-3 py-1 rounded-full text-[10px] font-mono text-rose-400 animate-pulse">
-            Remix Mode Active
+          
+          <div className="absolute bottom-6 right-8 z-10 bg-rose-500/10 border border-rose-500/20 px-3 py-1 rounded-full text-[10px] font-mono text-rose-400 animate-pulse">
+            System Override Active
           </div>
         </motion.div>
       </div>

@@ -3,31 +3,40 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Browser } from "@phosphor-icons/react";
 
+const BACKGROUND_ELEMENTS = [
+  { left: 15, top: 25, rotateInit: -10, rotateAnim: 180, duration: 6.5 },
+  { left: 85, top: 40, rotateInit: 15, rotateAnim: -120, duration: 8.2 },
+  { left: 35, top: 75, rotateInit: -5, rotateAnim: 240, duration: 5.8 },
+  { left: 65, top: 15, rotateInit: 20, rotateAnim: -90, duration: 7.4 },
+  { left: 25, top: 60, rotateInit: -15, rotateAnim: 150, duration: 9.1 },
+  { left: 75, top: 85, rotateInit: 5, rotateAnim: -180, duration: 6.9 },
+];
+
 export function HeroInteractive() {
   return (
     <section className="relative min-h-[100dvh] flex items-center justify-center px-4 md:px-8 py-24 overflow-hidden max-w-7xl mx-auto w-full">
       {/* Chaotic Background Elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {[...Array(6)].map((_, i) => (
+        {BACKGROUND_ELEMENTS.map((el, i) => (
           <motion.div
             key={i}
-            initial={{ opacity: 0, y: 100, rotate: -20 + Math.random() * 40 }}
+            initial={{ opacity: 0, y: 100, rotate: el.rotateInit }}
             animate={{ 
               opacity: [0, 0.2, 0],
               y: [-20, -120],
               x: Math.sin(i) * 50,
-              rotate: Math.random() * 360 
+              rotate: el.rotateAnim 
             }}
             transition={{ 
-              duration: 5 + Math.random() * 5, 
+              duration: el.duration, 
               repeat: Infinity, 
               delay: i * 1.2,
               ease: "linear"
             }}
             className="absolute rounded-lg border border-rose-500/20 bg-rose-500/5 w-24 h-16 shadow-[0_0_15px_rgba(244,63,94,0.1)]"
             style={{
-              left: `${10 + Math.random() * 80}%`,
-              top: `${20 + Math.random() * 60}%`,
+              left: `${el.left}%`,
+              top: `${el.top}%`,
             }}
           >
             <div className="w-full h-2 bg-rose-500/20 rounded-t-lg" />
@@ -56,7 +65,7 @@ export function HeroInteractive() {
           </h1>
 
           <p className="text-lg md:text-xl text-zinc-400 leading-relaxed max-w-[45ch]">
-            Every unread tab. Every 3 AM doomscroll. Every time you rage-quit Twitter just to reopen it 5 seconds later. ScrollShame turns your digital dumpster fire into a weekly narrated receipt.
+            Every unread tab. Every 3 AM doomscroll. Every time you rage-quit Twitter just to reopen it 5 seconds later. ScrollShame turns your digital dumpster fire into a weekly narrated receipt. And if you're really out of control? We will actively harass you until you stop.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mt-4">

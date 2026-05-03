@@ -12,7 +12,9 @@ export type FeatureName =
   | 'patternAnalysis'
   | 'shameStreak'
   | 'instantReplay'
-  | 'osLevelHarassment';
+  | 'osLevelHarassment'
+  | 'tabHijacking'
+  | 'touchGrassModal';
 
 export type FeatureTier = 'free' | 'pro' | 'pro-plus';
 
@@ -32,6 +34,8 @@ const FEATURE_TIER_MAP: Record<FeatureName, FeatureTier> = {
   shameStreak:             'pro-plus',
   instantReplay:           'pro-plus',
   osLevelHarassment:       'pro-plus',
+  tabHijacking:            'pro-plus',
+  touchGrassModal:         'pro-plus',
 };
 
 export async function canAccess(feature: FeatureName): Promise<boolean> {

@@ -14,6 +14,8 @@ const DEFAULT_SETTINGS: ExtensionSettings = {
   trackSessionLength:  true,
   roastVoice:          'therapist',
   osHarassmentEnabled: false,
+  tabHijackingEnabled: false,
+  touchGrassEnabled: false,
 };
 
 function Options() {
@@ -200,6 +202,44 @@ function Options() {
             <div class={`toggle${settings.osHarassmentEnabled ? ' on' : ''}${!isPlus ? ' locked' : ''}`}
               onClick={() => {
                 if (isPlus) updateSetting('osHarassmentEnabled', !settings.osHarassmentEnabled);
+                else window.open('https://polar.sh/scrollshame/plus', '_blank');
+              }}
+            >
+              <div class="toggle-thumb" />
+            </div>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <label class="toggle-label" style={{ opacity: isPlus ? 1 : 0.5 }}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span>Tab Title Hijacking</span>
+              <span class="hint" style={{ fontSize: '11px', marginTop: '2px', color: 'var(--text-muted)' }}>
+                Get passive-aggressive messages on tabs you ignore.
+              </span>
+            </div>
+            <div class={`toggle${settings.tabHijackingEnabled ? ' on' : ''}${!isPlus ? ' locked' : ''}`}
+              onClick={() => {
+                if (isPlus) updateSetting('tabHijackingEnabled', !settings.tabHijackingEnabled);
+                else window.open('https://polar.sh/scrollshame/plus', '_blank');
+              }}
+            >
+              <div class="toggle-thumb" />
+            </div>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <label class="toggle-label" style={{ opacity: isPlus ? 1 : 0.5 }}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span>Forced "Touch Grass" Breaks</span>
+              <span class="hint" style={{ fontSize: '11px', marginTop: '2px', color: 'var(--text-muted)' }}>
+                Get physically stopped from doomscrolling with unskippable breaks.
+              </span>
+            </div>
+            <div class={`toggle${settings.touchGrassEnabled ? ' on' : ''}${!isPlus ? ' locked' : ''}`}
+              onClick={() => {
+                if (isPlus) updateSetting('touchGrassEnabled', !settings.touchGrassEnabled);
                 else window.open('https://polar.sh/scrollshame/plus', '_blank');
               }}
             >

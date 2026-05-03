@@ -36,14 +36,13 @@ const plans = [
   },
   {
     name: "Chaos Pass",
-    price: "$24",
+    price: "$4.99",
     features: [
       "Everything in Pro",
-      "Monday push notifications",
-      "Chaos Certificate (gold edition)",
-      "First access to future voices",
-      "Developer Direct Line",
-      "Support development"
+      "OS-Level Harassment",
+      "Tab Title Hijacking",
+      "Forced 'Touch Grass' Breaks",
+      "All future unhinged updates"
     ],
     cta: "Get Chaos Pass",
     popular: false,
@@ -59,8 +58,8 @@ export function PricingCards() {
           <LockKey size={14} /> One-time purchase
         </div>
         <h2 className="text-4xl md:text-5xl font-bold tracking-tighter text-zinc-100">
-          No subscription. <br />
-          <span className="text-zinc-500">We're not that kind of chaos.</span>
+          Pick your level of <br />
+          <span className="text-zinc-500">masochism.</span>
         </h2>
       </div>
 
@@ -89,7 +88,8 @@ export function PricingCards() {
               <h3 className="text-xl font-bold text-zinc-100">{plan.name}</h3>
               <div className="flex items-baseline gap-1">
                 <span className="text-4xl font-bold tracking-tighter text-zinc-100">{plan.price}</span>
-                {plan.price !== "$0" && <span className="text-sm text-zinc-500 font-medium">/ once</span>}
+                {plan.price === "$12" && <span className="text-sm text-zinc-500 font-medium">/ once</span>}
+                {plan.price === "$4.99" && <span className="text-sm text-zinc-500 font-medium">/ mo</span>}
               </div>
             </div>
 

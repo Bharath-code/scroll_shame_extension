@@ -34,6 +34,8 @@ export interface ExtensionSettings {
   trackSessionLength: boolean;
   roastVoice: RoastVoice;
   osHarassmentEnabled: boolean;
+  tabHijackingEnabled: boolean;
+  touchGrassEnabled: boolean;
 }
 
 const DEFAULT_SETTINGS: ExtensionSettings = {
@@ -44,7 +46,9 @@ const DEFAULT_SETTINGS: ExtensionSettings = {
   trackTabChurn: true,
   trackSessionLength: true,
   roastVoice: 'therapist',
-  osHarassmentEnabled: false
+  osHarassmentEnabled: false,
+  tabHijackingEnabled: false,
+  touchGrassEnabled: false
 };
 
 export class ChromeStorageAdapter implements StorageAdapter {

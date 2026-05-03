@@ -63,6 +63,8 @@ describe('feature-flags', () => {
       expect(features).toContain('allRoastVoices');
       expect(features).toContain('interventionModals');
       expect(features).toContain('osLevelHarassment');
+      expect(features).toContain('tabHijacking');
+      expect(features).toContain('touchGrassModal');
     });
   });
 
@@ -71,6 +73,8 @@ describe('feature-flags', () => {
       expect(getFeatureTier('allRoastVoices')).toBe('pro');
       expect(getFeatureTier('shameStreak')).toBe('pro-plus');
       expect(getFeatureTier('osLevelHarassment')).toBe('pro-plus');
+      expect(getFeatureTier('tabHijacking')).toBe('pro-plus');
+      expect(getFeatureTier('touchGrassModal')).toBe('pro-plus');
     });
   });
 });

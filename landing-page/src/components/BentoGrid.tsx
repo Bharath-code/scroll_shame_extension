@@ -6,20 +6,20 @@ import { cn } from "@/lib/utils";
 
 const features = [
   {
-    title: "Quietly Observes",
-    description: "ScrollShame watches your tabs. Quietly. Professionally. Judging every single decision you make.",
-    icon: Eye,
+    title: "OS-Level Harassment",
+    description: "We don't just watch silently anymore. Spiraling? We will blow up your Mac notifications to stop you.",
+    icon: BellRinging,
     className: "col-span-1 md:col-span-2 row-span-1",
-    action: "Install",
-    activeVisual: <ActiveEyeVisual />
+    action: "Brace yourself",
+    activeVisual: <PulseNotification />
   },
   {
     title: "The Weekly Roast",
-    description: "Every Monday, a Wrapped-style summary notification. Your week in chaos, visualized and weaponized.",
-    icon: BellRinging,
+    description: "Every Monday, a brutally honest summary notification. Your week in chaos, visualized and weaponized against you.",
+    icon: ShareNetwork,
     className: "col-span-1",
     action: "Monday",
-    activeVisual: <PulseNotification />
+    activeVisual: <TweetVisual />
   },
   {
     title: "Chaos Certificates",
@@ -38,19 +38,19 @@ const features = [
     activeVisual: <ScoreDeltaVisual />
   },
   {
-    title: "Dynamic X Shares",
-    description: "Your report card converts into a dynamic tweet. Let the timeline know how bad it got.",
-    icon: ShareNetwork,
+    title: "Tab Title Hijacking",
+    description: "Leave a tab open and ignore it? We will passively-aggressively change the tab title to guilt-trip you.",
+    icon: Eye,
     className: "col-span-1 md:col-span-2 row-span-1",
-    action: "Post",
-    activeVisual: <TweetVisual />
+    action: "Close it",
+    activeVisual: <ActiveEyeVisual />
   },
   {
-    title: "Chaos Streaks",
-    description: "Every consecutive week adds to your streak. Quarterly and Yearly 'Wrapped' reviews imminent. We're concerned.",
+    title: "Forced 'Touch Grass' Breaks",
+    description: "Doomscrolling for 5 minutes straight? We will hijack your entire screen and force you to look at a picture of real grass. Unskippable.",
     icon: Fire,
     className: "col-span-1",
-    action: "Don't stop now",
+    action: "Go outside",
     activeVisual: <StreakVisual />
   }
 ];

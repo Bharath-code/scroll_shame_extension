@@ -14,6 +14,7 @@
 
   function init() {
     window.addEventListener('scroll', handleScroll, { passive: true });
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     console.log('[ScrollShame] Content script initialized');
   }
 
@@ -44,6 +45,12 @@
 
     lastScrollTime = now;
     lastScrollPosition = currentPosition;
+    
+    // Reset the continuous scroll timer if we stop scrolling for 5 seconds
+    if (scrollResetTimeout) clearTimeout(scrollResetTimeout);
+    scrollResetTimeout = setTimeout(resetScrollTimer, 5000);
+    
+    checkTouchGrass();
   }
 
   function sendScrollVelocity(velocity) {
@@ -64,6 +71,115 @@
     }).catch((error) => {
       // Log errors for debugging
       console.error('[ScrollShame] Failed to send scroll velocity:', error);
+    });
+  }
+
+  // --- Tab Title Hijacking ---
+  let originalTitle = '';
+  let hijackTimeout = null;
+
+  function handleVisibilityChange() {
+    if (document.visibilityState === 'hidden') {
+      hijackTimeout = setTimeout(async () => {
+        const settings = await getSettings();
+        if (settings.tabHijackingEnabled && await isProPlus()) {
+          originalTitle = document.title;
+          const messages = ["I'm eating your RAM", "Please close me", "You forgot about me", "Why am I still open?"];
+          document.title = messages[Math.floor(Math.random() * messages.length)];
+        }
+      }, 20 * 60 * 1000); // 20 minutes for inactive tabs
+    } else {
+      if (hijackTimeout) {
+        clearTimeout(hijackTimeout);
+        hijackTimeout = null;
+      }
+      if (originalTitle) {
+        document.title = originalTitle;
+        originalTitle = '';
+      }
+    }
+  }
+
+  // --- Touch Grass Modal ---
+  let continuousScrollStartTime = 0;
+  let touchGrassTriggered = false;
+  let scrollResetTimeout = null;
+
+  function resetScrollTimer() {
+    continuousScrollStartTime = 0;
+  }
+
+  async function checkTouchGrass() {
+    if (touchGrassTriggered) return;
+    
+    if (continuousScrollStartTime === 0) {
+      continuousScrollStartTime = Date.now();
+    } else if (Date.now() - continuousScrollStartTime > 5 * 60 * 1000) { // 5 minutes continuous scrolling
+      const settings = await getSettings();
+      if (settings.touchGrassEnabled && await isProPlus()) {
+        triggerTouchGrassModal();
+      }
+    }
+  }
+
+  function triggerTouchGrassModal() {
+    touchGrassTriggered = true;
+    const modal = document.createElement('div');
+    modal.id = 'scroll-shame-touch-grass';
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100vw';
+    modal.style.height = '100vh';
+    modal.style.zIndex = '999999';
+    modal.style.backgroundColor = 'black';
+    modal.style.color = 'white';
+    modal.style.display = 'flex';
+    modal.style.flexDirection = 'column';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+    modal.style.backgroundImage = 'url("https://images.unsplash.com/photo-1533460004989-cef01064af7e?q=80&w=1000&auto=format&fit=crop")';
+    modal.style.backgroundSize = 'cover';
+    modal.style.backgroundPosition = 'center';
+    
+    const text = document.createElement('div');
+    text.style.backgroundColor = 'rgba(0,0,0,0.7)';
+    text.style.padding = '2rem';
+    text.style.borderRadius = '1rem';
+    text.style.fontSize = '2rem';
+    text.style.fontWeight = 'bold';
+    text.style.textAlign = 'center';
+    text.innerText = "Look at this. Remember what it feels like?\nYou have 10 seconds to contemplate your life choices.";
+    
+    modal.appendChild(text);
+    document.body.appendChild(modal);
+    document.body.style.overflow = 'hidden';
+    
+    setTimeout(() => {
+      if (modal.parentNode) {
+        modal.parentNode.removeChild(modal);
+      }
+      document.body.style.overflow = '';
+      touchGrassTriggered = false;
+      continuousScrollStartTime = Date.now();
+    }, 10000);
+  }
+
+  // --- Helpers ---
+  async function getSettings() {
+    return new Promise(resolve => {
+      chrome.storage.local.get('settings', result => {
+        resolve(result.settings || {});
+      });
+    });
+  }
+
+  async function isProPlus() {
+    return new Promise(resolve => {
+      chrome.storage.local.get('license-status', result => {
+        const status = result['license-status'] || {};
+        resolve(status.tier === 'pro-plus' || status.tier === 'chaos-pass');
+      });
     });
   }
 
