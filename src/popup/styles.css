@@ -185,6 +185,30 @@ body {
 }
 .btn-upgrade-small:hover { opacity: 0.9; }
 
+/* ─── RAM Banner ───────────────────────────────────────────────────────────── */
+.ram-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 0.75rem;
+  background: rgba(255, 45, 45, 0.05);
+  border: 1px solid rgba(255, 45, 45, 0.2);
+  border-radius: 2px;
+  text-align: center;
+}
+
+.ram-banner p {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.ram-banner p strong {
+  color: var(--red);
+  letter-spacing: 0.04em;
+}
+
 /* ─── Action Buttons ───────────────────────────────────────────────────────── */
 .actions {
   display: flex;

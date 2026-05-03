@@ -84,7 +84,14 @@
         const settings = await getSettings();
         if (settings.tabHijackingEnabled && await isProPlus()) {
           originalTitle = document.title;
-          const messages = ["I'm eating your RAM", "Please close me", "You forgot about me", "Why am I still open?"];
+          const messages = [
+            "I'm eating ~120MB of your RAM", 
+            "Close me, I'm starving your CPU", 
+            "Your system is gasping for air", 
+            "Why am I still open?",
+            "You forgot about me",
+            "Are you hoarding tabs again?"
+          ];
           document.title = messages[Math.floor(Math.random() * messages.length)];
         }
       }, 20 * 60 * 1000); // 20 minutes for inactive tabs

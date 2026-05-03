@@ -14,7 +14,9 @@
     "activeTab",
     "scripting",
     "notifications",
-    "alarms"
+    "alarms",
+    "system.memory",
+    "processes"
   ],
   "background": {
     "service_worker": "background.js",

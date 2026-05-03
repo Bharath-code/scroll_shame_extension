@@ -4,6 +4,7 @@ import { calculateChaosScore, getChaosTitle } from '../lib/scoring';
 import { storage } from '../lib/storage';
 import { todayKey } from '../lib/date-key';
 import { isPro, isProPlus } from '../lib/license';
+import { getRamInfo, RamInfo } from '../lib/memory';
 
 import './styles.css';
 
@@ -15,6 +16,7 @@ function Popup() {
   const [loading, setLoading] = useState(true);
   const [tier,    setTier   ] = useState<DisplayTier>('free');
   const [streak,  setStreak ] = useState(0);
+  const [ramInfo, setRamInfo] = useState<RamInfo | null>(null);
 
   useEffect(() => { loadStats(); }, []);
 
@@ -30,6 +32,9 @@ function Popup() {
       // TASK-11: Load streak for popup display
       const s = await storage.getChaosStreak();
       setStreak(s);
+
+      const ram = await getRamInfo();
+      setRamInfo(ram);
     } catch (err) {
       console.error('[ScrollShame] Popup failed to load:', err);
     } finally {
@@ -98,6 +103,17 @@ function Popup() {
       <p class="shame-title-row">
         <strong>{chaosTitle}</strong>
       </p>
+
+      {/* ── RAM Eaten Banner ────────────────────────── */}
+      {ramInfo && (
+        <div class="ram-banner">
+          <p>
+            <strong>{ramInfo.isPressureHigh ? '🔥 SYSTEM CHOKING' : 'RAM Eaten:'}</strong>
+            <br />
+            {ramInfo.message}
+          </p>
+        </div>
+      )}
 
       {/* ── Actions ────────────────────────────────── */}
       <div class="actions">
