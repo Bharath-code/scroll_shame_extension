@@ -125,6 +125,9 @@ function Report() {
   const [hoveredVoice,  setHoveredVoice ] = useState<RoastVoice | null>(null);
   const [recentShare,   setRecentShare  ] = useState(false);
   const [streak,        setStreak       ] = useState(0);
+  // TASK-12: Roast Remix
+  const [remixMode,     setRemixMode    ] = useState(false);
+  const [remixLines,    setRemixLines   ] = useState<{ voice: RoastVoice; line: string }[]>([]);
 
   useEffect(() => { load(); }, []);
 
@@ -214,6 +217,25 @@ function Report() {
     const score = calculateChaosScore(stats);
     setRoastLines(buildLines(voice, stats, score));
     storage.getSettings().then(s => storage.setSettings({ ...s, roastVoice: voice }));
+  }
+
+  // TASK-12: Build one line per allowed voice for Remix Mode
+  function buildRemixLines(): { voice: RoastVoice; line: string }[] {
+    const score = calculateChaosScore(stats);
+    return allowedVoices.map(v => ({
+      voice: v,
+      line: buildLines(v, stats, score)[0] ?? '',
+    }));
+  }
+
+  function toggleRemixMode() {
+    if (!isPaid) {
+      window.open('https://polar.sh/scrollshame', '_blank');
+      return;
+    }
+    const next = !remixMode;
+    setRemixMode(next);
+    if (next) setRemixLines(buildRemixLines());
   }
 
   // ─── Copy to clipboard ──────────────────────────────────────────────────────
@@ -532,46 +554,75 @@ function Report() {
         <div class="receipt-bottom" />
       </div>
 
-      {/* ── Voice Selector — TASK-05 teasers ─────────────────────── */}
+      {/* ── Voice Selector / Roast Remix — TASK-05, TASK-12 ─────────── */}
       <div class="report-card voice-panel">
-        <span class="voice-label">Roast Voice</span>
-        <div class="voice-grid">
-          {ALL_VOICES.map(voice => {
-            const isLocked  = !allowedVoices.includes(voice);
-            const isActive  = voice === activeVoice;
-            const isHovered = hoveredVoice === voice;
-            const teaser    = VOICE_TEASERS[voice];
-            return (
-              <div key={voice} class="voice-chip-wrapper">
-                <button
-                  class={`voice-chip${isActive ? ' active' : ''}${isLocked ? ' locked' : ''}`}
-                  onClick={() => isLocked
-                    ? window.open('https://polar.sh/scrollshame', '_blank')
-                    : switchVoice(voice)
-                  }
-                  onMouseEnter={() => isLocked && teaser ? setHoveredVoice(voice) : null}
-                  onMouseLeave={() => setHoveredVoice(null)}
-                >
-                  {isLocked ? '🔒 ' : ''}{VOICE_LABELS[voice]}
-                </button>
-
-                {/* TASK-05: Teaser popover on hover */}
-                {isHovered && teaser && (
-                  <div class="voice-teaser-popover">
-                    <p class="teaser-line">"{teaser}"</p>
-                    <button
-                      class="teaser-cta"
-                      onClick={() => window.open('https://polar.sh/scrollshame', '_blank')}
-                    >
-                      Unlock — $12 ↗
-                    </button>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+        <div class="voice-panel-header">
+          {remixMode ? (
+            <span class="voice-label">Roast Remix</span>
+          ) : (
+            <span class="voice-label">Roast Voice</span>
+          )}
+          {/* TASK-12: Remix toggle — Pro/Chaos Pass only */}
+          <button
+            class={`btn-remix${remixMode ? ' active' : ''}${!isPaid ? ' locked' : ''}`}
+            onClick={toggleRemixMode}
+            title={!isPaid ? 'All voices have an opinion. Hear them all. — $12' : remixMode ? 'Back to single voice' : 'Roast Remix: all voices, same week'}
+          >
+            {!isPaid ? '🔒 ' : ''}{remixMode ? 'Exit Remix' : 'Roast Remix'}
+          </button>
         </div>
+
+        {remixMode ? (
+          /* TASK-12: Remix view */
+          <div class="remix-grid">
+            {remixLines.map(({ voice, line }) => (
+              <div key={voice} class="remix-card">
+                <span class="remix-voice-name">{VOICE_LABELS[voice]}</span>
+                <p class="remix-line">"{line}"</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          /* Normal voice chip grid */
+          <div class="voice-grid">
+            {ALL_VOICES.map(voice => {
+              const isLocked  = !allowedVoices.includes(voice);
+              const isActive  = voice === activeVoice;
+              const isHovered = hoveredVoice === voice;
+              const teaser    = VOICE_TEASERS[voice];
+              return (
+                <div key={voice} class="voice-chip-wrapper">
+                  <button
+                    class={`voice-chip${isActive ? ' active' : ''}${isLocked ? ' locked' : ''}`}
+                    onClick={() => isLocked
+                      ? window.open('https://polar.sh/scrollshame', '_blank')
+                      : switchVoice(voice)
+                    }
+                    onMouseEnter={() => isLocked && teaser ? setHoveredVoice(voice) : null}
+                    onMouseLeave={() => setHoveredVoice(null)}
+                  >
+                    {isLocked ? '🔒 ' : ''}{VOICE_LABELS[voice]}
+                  </button>
+
+                  {/* TASK-05: Teaser popover on hover */}
+                  {isHovered && teaser && (
+                    <div class="voice-teaser-popover">
+                      <p class="teaser-line">"{teaser}"</p>
+                      <button
+                        class="teaser-cta"
+                        onClick={() => window.open('https://polar.sh/scrollshame', '_blank')}
+                      >
+                        Unlock — $12 ↗
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
+
 
       {/* ── Share Actions ─────────────────────────────────────────── */}
       <div class="share-row">

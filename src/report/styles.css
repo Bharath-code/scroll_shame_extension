@@ -333,6 +333,72 @@ html, body {
   margin-bottom: 0.5rem;
 }
 
+/* TASK-12: Header row for voice panel */
+.voice-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+.voice-panel-header .voice-label {
+  margin-bottom: 0;
+}
+
+/* TASK-12: Remix toggle button */
+.btn-remix {
+  padding: 0.22rem 0.55rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.btn-remix:hover { border-color: var(--white); color: var(--white); }
+.btn-remix.active {
+  border-color: var(--red);
+  color: var(--red);
+  background: rgba(255, 45, 45, 0.08);
+}
+.btn-remix.locked { opacity: 0.45; }
+
+/* TASK-12: Remix stacked cards */
+.remix-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.remix-card {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: rgba(255,255,255,0.02);
+}
+
+.remix-voice-name {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--red);
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.remix-line {
+  font-size: 0.78rem;
+  color: var(--white);
+  line-height: 1.4;
+  margin: 0;
+  font-style: italic;
+}
+
 .voice-grid {
   display: flex;
   flex-wrap: wrap;
