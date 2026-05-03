@@ -96,6 +96,47 @@ chrome.windows.onFocusChanged.addListener((windowId) => {
   }
 });
 
+// OS-Level Harassment tracking
+let lastHarassmentTime = 0;
+
+async function checkOSHarassment(currentCount) {
+  if (currentCount < 30) return;
+  
+  // 1-hour cooldown
+  const now = Date.now();
+  if (now - lastHarassmentTime < 60 * 60 * 1000) return;
+  
+  // Check settings
+  const settingsResult = await new Promise(resolve => chrome.storage.local.get(STORAGE_KEYS.SETTINGS, resolve));
+  const settings = settingsResult[STORAGE_KEYS.SETTINGS] || {};
+  if (!settings.osHarassmentEnabled) return;
+  
+  // Check license
+  const licenseResult = await new Promise(resolve => chrome.storage.local.get('license-status', resolve));
+  const licenseStatus = licenseResult['license-status'] || {};
+  if (licenseStatus.tier !== 'chaos-pass' && licenseStatus.tier !== 'pro-plus') return;
+  
+  // Fire notification
+  lastHarassmentTime = now;
+  
+  const roasts = [
+    `30 tabs open. What are you even looking for anymore?`,
+    `Your browser is crying. Close some tabs.`,
+    `Do you honestly think you'll read any of these?`,
+    `RAM isn't free, you know. Close the tabs.`,
+    `This isn't productive. It's just digital hoarding.`
+  ];
+  const roast = roasts[Math.floor(Math.random() * roasts.length)];
+  
+  chrome.notifications.create({
+    type: 'basic',
+    iconUrl: 'icon.svg',
+    title: 'ScrollShame Intervention',
+    message: roast,
+    priority: 2
+  });
+}
+
 // Update peak tab count
 async function updatePeakTabs() {
   const tabs = await chrome.tabs.query({ currentWindow: true });
@@ -115,6 +156,9 @@ async function updatePeakTabs() {
   }
 
   await saveDailyData(today, data);
+  
+  // Check for OS-Level Harassment
+  checkOSHarassment(currentCount);
 }
 
 // Increment a stat in today's data

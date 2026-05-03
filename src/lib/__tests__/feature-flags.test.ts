@@ -32,6 +32,10 @@ describe('feature-flags', () => {
       vi.mocked(license.isProPlus).mockResolvedValue(false);
       expect(await canAccess('interventionModals')).toBe(false);
     });
+
+    it('returns false for unknown features', async () => {
+      expect(await canAccess('unknownFeature' as any)).toBe(false);
+    });
   });
 
   describe('getAccessibleFeatures', () => {
@@ -58,6 +62,7 @@ describe('feature-flags', () => {
       const features = await getAccessibleFeatures();
       expect(features).toContain('allRoastVoices');
       expect(features).toContain('interventionModals');
+      expect(features).toContain('osLevelHarassment');
     });
   });
 
@@ -65,6 +70,7 @@ describe('feature-flags', () => {
     it('returns correct tier for a given feature', () => {
       expect(getFeatureTier('allRoastVoices')).toBe('pro');
       expect(getFeatureTier('shameStreak')).toBe('pro-plus');
+      expect(getFeatureTier('osLevelHarassment')).toBe('pro-plus');
     });
   });
 });

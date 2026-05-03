@@ -13,6 +13,7 @@ const DEFAULT_SETTINGS: ExtensionSettings = {
   trackTabChurn:       true,
   trackSessionLength:  true,
   roastVoice:          'therapist',
+  osHarassmentEnabled: false,
 };
 
 function Options() {
@@ -183,6 +184,29 @@ function Options() {
             </label>
           </div>
         ))}
+      </section>
+
+      {/* ── Chaos Pass Features ─────────────────────────────────── */}
+      <section class="settings-section">
+        <h2>Chaos Pass Exclusive</h2>
+        <div class="setting-item">
+          <label class="toggle-label" style={{ opacity: isPlus ? 1 : 0.5 }}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span>OS-Level Harassment</span>
+              <span class="hint" style={{ fontSize: '11px', marginTop: '2px', color: 'var(--text-muted)' }}>
+                Get aggressively roasted via system notifications when you're spiraling.
+              </span>
+            </div>
+            <div class={`toggle${settings.osHarassmentEnabled ? ' on' : ''}${!isPlus ? ' locked' : ''}`}
+              onClick={() => {
+                if (isPlus) updateSetting('osHarassmentEnabled', !settings.osHarassmentEnabled);
+                else window.open('https://polar.sh/scrollshame/plus', '_blank');
+              }}
+            >
+              <div class="toggle-thumb" />
+            </div>
+          </label>
+        </div>
       </section>
 
       {/* ── Save ────────────────────────────────────────────────── */}

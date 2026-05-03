@@ -11,7 +11,8 @@ export type FeatureName =
   | 'predictionEngine'
   | 'patternAnalysis'
   | 'shameStreak'
-  | 'instantReplay';
+  | 'instantReplay'
+  | 'osLevelHarassment';
 
 export type FeatureTier = 'free' | 'pro' | 'pro-plus';
 
@@ -30,6 +31,7 @@ const FEATURE_TIER_MAP: Record<FeatureName, FeatureTier> = {
   patternAnalysis:         'pro-plus',
   shameStreak:             'pro-plus',
   instantReplay:           'pro-plus',
+  osLevelHarassment:       'pro-plus',
 };
 
 export async function canAccess(feature: FeatureName): Promise<boolean> {
