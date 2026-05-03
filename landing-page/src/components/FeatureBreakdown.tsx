@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle, ChartLineUp, Users, DownloadSimple } from "@phosphor-icons/react";
+import { CheckCircle, ChartLineUp, Users, DownloadSimple, Fire } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
 const VOICES = [
@@ -102,6 +102,52 @@ export function FeatureBreakdown() {
             Was this week worse? Suspiciously better? Your report tells you whether you're trending toward chaos or pulling yourself together. This is a new shareable moment every Monday.
           </p>
         </div>
+      </div>
+
+      <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+      {/* Roast Remix & Clean Week */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+        <div className="flex flex-col gap-6">
+          <div className="inline-flex items-center gap-2 text-rose-500 font-mono text-sm tracking-tight">
+            <Fire size={16} /> 03 / Pro Features
+          </div>
+          <h3 className="text-4xl md:text-5xl font-bold tracking-tighter text-zinc-100">
+            Roast Remix <span className="text-zinc-500">& Clean Week.</span>
+          </h3>
+          <p className="text-lg text-zinc-400 leading-relaxed max-w-[45ch]">
+            Get all 5 voices to comment on the same disaster simultaneously with **Roast Remix**. And if you actually behave? **Clean Week Mode** ensures the celebration is just as unhinged.
+          </p>
+        </div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="relative aspect-square md:aspect-video rounded-[2.5rem] bg-zinc-900/40 border border-white/5 p-8 flex flex-col gap-4 overflow-hidden group"
+        >
+          <div className="flex flex-col gap-3">
+            {[
+              { name: "Therapist", text: "I'm noticing a pattern here...", color: "text-zinc-400" },
+              { name: "Drill Sergeant", text: "UNACCEPTABLE TAB COUNT!", color: "text-rose-500" },
+              { name: "Your Mom", text: "I'm not angry, just disappointed.", color: "text-zinc-500" }
+            ].map((r, i) => (
+              <motion.div 
+                key={i}
+                initial={{ x: -20, opacity: 0 }}
+                whileInView={{ x: 0, opacity: 1 }}
+                transition={{ delay: i * 0.2 }}
+                className="bg-zinc-950/50 border border-white/5 p-3 rounded-xl flex flex-col gap-1"
+              >
+                <span className={cn("text-[10px] font-bold uppercase tracking-widest", r.color)}>{r.name}</span>
+                <p className="text-xs text-zinc-300 italic">"{r.text}"</p>
+              </motion.div>
+            ))}
+          </div>
+          <div className="absolute bottom-6 right-8 bg-rose-500/10 border border-rose-500/20 px-3 py-1 rounded-full text-[10px] font-mono text-rose-400 animate-pulse">
+            Remix Mode Active
+          </div>
+        </motion.div>
       </div>
     </section>
   );
