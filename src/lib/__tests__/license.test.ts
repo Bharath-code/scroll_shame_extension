@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getTierFromKey, upgradeToPro, downgradeToFree, isPro, LicenseStatus } from '../license';
+import { getTierFromKey, upgradeToPro, downgradeToFree, isPro, isProPlus, upgradeToProPlus, LicenseStatus } from '../license';
 import { storage } from '../storage';
 
 // Mock the storage module
@@ -123,10 +123,62 @@ describe('isPro', () => {
     await isPro();
     
     expect(consoleSpy).toHaveBeenCalledWith(
-      '[License] Failed to check license status:',
+      '[License] Failed to check pro status:',
       expect.any(Error)
     );
     
     consoleSpy.mockRestore();
+  });
+});
+
+describe('isProPlus / isChaosPass', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('returns true when tier is chaos-pass', async () => {
+    const mockGetLicenseStatus = vi.mocked(storage.getLicenseStatus);
+    mockGetLicenseStatus.mockResolvedValue({ tier: 'chaos-pass' });
+    
+    expect(await isProPlus()).toBe(true);
+  });
+
+  it('returns true when tier is legacy pro-plus', async () => {
+    const mockGetLicenseStatus = vi.mocked(storage.getLicenseStatus);
+    mockGetLicenseStatus.mockResolvedValue({ tier: 'pro-plus' });
+    
+    expect(await isProPlus()).toBe(true);
+  });
+
+  it('returns false when tier is just pro', async () => {
+    const mockGetLicenseStatus = vi.mocked(storage.getLicenseStatus);
+    mockGetLicenseStatus.mockResolvedValue({ tier: 'pro' });
+    
+    expect(await isProPlus()).toBe(false);
+  });
+
+  it('returns false on error', async () => {
+    const mockGetLicenseStatus = vi.mocked(storage.getLicenseStatus);
+    mockGetLicenseStatus.mockRejectedValue(new Error('Storage error'));
+    
+    expect(await isProPlus()).toBe(false);
+  });
+});
+
+describe('upgradeToProPlus / upgradeToChaosPass', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('sets license tier to chaos-pass', async () => {
+    const mockSetLicenseStatus = vi.mocked(storage.setLicenseStatus);
+    
+    await upgradeToProPlus('CP00-0000-0000-0001');
+    
+    expect(mockSetLicenseStatus).toHaveBeenCalledWith({
+      tier: 'chaos-pass',
+      purchasedAt: expect.any(String),
+      licenseKey: 'CP00-0000-0000-0001'
+    });
   });
 });

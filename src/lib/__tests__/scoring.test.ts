@@ -99,36 +99,58 @@ describe('calculateShameScore', () => {
 });
 
 describe('getShameTitle', () => {
-  it('returns "Certified Chaos Agent" for score >= 80', () => {
+  it('returns "Certified Chaos Agent" for score >= 80 and < 90', () => {
     expect(getShameTitle(80)).toBe('Certified Chaos Agent');
-    expect(getShameTitle(99)).toBe('Certified Chaos Agent');
+    expect(getShameTitle(89)).toBe('Certified Chaos Agent');
   });
 
-  it('returns "Tab Hoarder" for score >= 60 and < 80', () => {
-    expect(getShameTitle(60)).toBe('Tab Hoarder');
-    expect(getShameTitle(79)).toBe('Tab Hoarder');
+  it('returns "Tab Hoarder Supreme" for score >= 65 and < 80', () => {
+    expect(getShameTitle(65)).toBe('Tab Hoarder Supreme');
+    expect(getShameTitle(79)).toBe('Tab Hoarder Supreme');
   });
 
-  it('returns "Mild Chaos Agent" for score >= 40 and < 60', () => {
-    expect(getShameTitle(40)).toBe('Mild Chaos Agent');
-    expect(getShameTitle(59)).toBe('Mild Chaos Agent');
+  it('returns "Chaos Enthusiast" for score >= 50 and < 65', () => {
+    expect(getShameTitle(50)).toBe('Chaos Enthusiast');
+    expect(getShameTitle(64)).toBe('Chaos Enthusiast');
   });
 
-  it('returns "Scroll Apprentice" for score >= 20 and < 40', () => {
-    expect(getShameTitle(20)).toBe('Scroll Apprentice');
-    expect(getShameTitle(39)).toBe('Scroll Apprentice');
+  it('returns "Chaotically Curious" for score >= 35 and < 50', () => {
+    expect(getShameTitle(35)).toBe('Chaotically Curious');
+    expect(getShameTitle(49)).toBe('Chaotically Curious');
   });
 
-  it('returns "Innocent Browser User" for score < 20', () => {
-    expect(getShameTitle(0)).toBe('Innocent Browser User');
-    expect(getShameTitle(19)).toBe('Innocent Browser User');
+  it('returns "Baby\'s First Chaos" for score >= 20 and < 35', () => {
+    expect(getShameTitle(20)).toBe("Baby's First Chaos");
+    expect(getShameTitle(34)).toBe("Baby's First Chaos");
+  });
+
+  it('returns "Suspiciously Calm" for score >= 10 and < 20', () => {
+    expect(getShameTitle(10)).toBe("Suspiciously Calm");
+    expect(getShameTitle(19)).toBe("Suspiciously Calm");
+  });
+
+  it('returns "We\'re Watching You" for score < 10', () => {
+    expect(getShameTitle(0)).toBe("We're Watching You");
+    expect(getShameTitle(9)).toBe("We're Watching You");
   });
 });
 
 describe('aggregateStats', () => {
-  it('returns empty object for empty array', () => {
-    expect(aggregateStats([])).toEqual({});
+  it('returns default empty object with 0 values for empty array', () => {
+    expect(aggregateStats([])).toEqual({
+      peakTabs: 0,
+      nightSessions: 0,
+      quickClosures: 0,
+      longSessions: 0,
+      spiralSessions: 0,
+      totalScrollDistance: 0,
+      ghostTabs: 0,
+      backspaceRage: 0,
+      tabDecisionTime: 0,
+      peakVelocity: 0,
+    });
   });
+
 
   it('returns max peakTabs from all days', () => {
     const result = aggregateStats([
@@ -180,5 +202,52 @@ describe('aggregateStats', () => {
     ]);
     expect(result.peakTabs).toBe(20);
     expect(result.nightSessions).toBe(5);
+  });
+});
+
+import { isCleanWeek, calculateScoreDelta } from '../scoring';
+
+describe('isCleanWeek', () => {
+  it('returns true for score < 20', () => {
+    expect(isCleanWeek(0)).toBe(true);
+    expect(isCleanWeek(19)).toBe(true);
+  });
+
+  it('returns false for score >= 20', () => {
+    expect(isCleanWeek(20)).toBe(false);
+    expect(isCleanWeek(50)).toBe(false);
+  });
+});
+
+describe('calculateScoreDelta', () => {
+  it('returns null if previous is null', () => {
+    expect(calculateScoreDelta(50, null)).toBeNull();
+  });
+
+  it('returns flat for tiny changes', () => {
+    const result = calculateScoreDelta(50, 49);
+    expect(result).toEqual({
+      delta: 0,
+      label: 'flat line. consistent chaos.',
+      direction: 'flat'
+    });
+  });
+
+  it('returns up when score gets worse', () => {
+    const result = calculateScoreDelta(70, 50);
+    expect(result).toEqual({
+      delta: 20,
+      label: '▲ 20 pts — getting worse. impressive.',
+      direction: 'up'
+    });
+  });
+
+  it('returns down when score gets better', () => {
+    const result = calculateScoreDelta(30, 50);
+    expect(result).toEqual({
+      delta: -20,
+      label: '▼ 20 pts — suspiciously reasonable this week',
+      direction: 'down'
+    });
   });
 });
