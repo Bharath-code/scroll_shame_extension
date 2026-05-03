@@ -42,6 +42,7 @@ const plans = [
       "Monday push notifications",
       "Chaos Certificate (gold edition)",
       "First access to future voices",
+      "Developer Direct Line",
       "Support development"
     ],
     cta: "Get Chaos Pass",

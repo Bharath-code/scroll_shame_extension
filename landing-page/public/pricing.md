@@ -28,4 +28,5 @@ ScrollShame offers a one-time purchase model. No subscriptions.
   - Monday push notifications
   - Chaos Certificate (Gold Edition)
   - First access to future voices
+  - Developer Direct Line & Voice Suggestions
   - Support the developer directly

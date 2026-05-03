@@ -4,10 +4,11 @@ ScrollShame is a local-first Chrome extension that transforms weekly browser beh
 
 ## Core Features
 - **Chaos Score**: A metric of browser-based instability.
-- **The Weekly Receipt**: A summary notification of the past week's usage.
+- **The Weekly Receipt**: A Wrapped-style summary notification of the past week's usage.
 - **Narrated Roasts**: 5 different narrator voices including The Therapist and The Interventionist.
 - **Chaos Certificates**: Downloadable diplomas for high-chaos users.
 - **Dynamic X Shares**: Viral shareable moments for social media.
+- **Chaos Pass Exclusivity**: Includes a Developer Direct Line for voice suggestions.
 - **Privacy First**: No account required, all data is stored locally in `chrome.storage.local`.
 
 ## Links

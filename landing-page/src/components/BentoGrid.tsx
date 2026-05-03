@@ -15,7 +15,7 @@ const features = [
   },
   {
     title: "The Weekly Receipt",
-    description: "You get a notification. Your weekly receipt is ready.",
+    description: "A Wrapped-style summary notification. Your week in chaos, visualized.",
     icon: BellRinging,
     className: "col-span-1",
     action: "Monday",
@@ -47,7 +47,7 @@ const features = [
   },
   {
     title: "Chaos Streaks",
-    description: "Every consecutive week you open your report adds to your streak. Quarterly review imminent.",
+    description: "Every consecutive week adds to your streak. Quarterly and Yearly 'Wrapped' reviews imminent.",
     icon: Fire,
     className: "col-span-1",
     action: "Keep it up",
