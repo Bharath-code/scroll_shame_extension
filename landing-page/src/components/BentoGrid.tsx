@@ -7,15 +7,15 @@ import { cn } from "@/lib/utils";
 const features = [
   {
     title: "Quietly Observes",
-    description: "ScrollShame watches your tabs. Quietly. Professionally. It doesn't judge. Yet.",
+    description: "ScrollShame watches your tabs. Quietly. Professionally. Judging every single decision you make.",
     icon: Eye,
     className: "col-span-1 md:col-span-2 row-span-1",
     action: "Install",
     activeVisual: <ActiveEyeVisual />
   },
   {
-    title: "The Weekly Receipt",
-    description: "A Wrapped-style summary notification. Your week in chaos, visualized.",
+    title: "The Weekly Roast",
+    description: "Every Monday, a Wrapped-style summary notification. Your week in chaos, visualized and weaponized.",
     icon: BellRinging,
     className: "col-span-1",
     action: "Monday",
@@ -23,7 +23,7 @@ const features = [
   },
   {
     title: "Chaos Certificates",
-    description: "Score 80+? Download an official printable diploma. Show your boss.",
+    description: "Score 80+? Download an official printable diploma. Stick it on the fridge.",
     icon: DownloadSimple,
     className: "col-span-1",
     action: "Download",
@@ -31,15 +31,15 @@ const features = [
   },
   {
     title: "The Chaos Score",
-    description: "A number between 0 and 100 representing your exact level of browser-based instability.",
+    description: "A highly scientific number from 0 to 100 representing your exact level of digital instability.",
     icon: PresentationChart,
     className: "col-span-1 md:col-span-2 row-span-1",
-    action: "Read it",
+    action: "Panic",
     activeVisual: <ScoreDeltaVisual />
   },
   {
     title: "Dynamic X Shares",
-    description: "Your report card converts into a dynamic roast tweet. A new shareable moment every week.",
+    description: "Your report card converts into a dynamic tweet. Let the timeline know how bad it got.",
     icon: ShareNetwork,
     className: "col-span-1 md:col-span-2 row-span-1",
     action: "Post",
@@ -47,21 +47,30 @@ const features = [
   },
   {
     title: "Chaos Streaks",
-    description: "Every consecutive week adds to your streak. Quarterly and Yearly 'Wrapped' reviews imminent.",
+    description: "Every consecutive week adds to your streak. Quarterly and Yearly 'Wrapped' reviews imminent. We're concerned.",
     icon: Fire,
     className: "col-span-1",
-    action: "Keep it up",
+    action: "Don't stop now",
     activeVisual: <StreakVisual />
   }
 ];
 
 export function BentoGrid() {
   return (
-    <section id="features" className="py-32 px-4 md:px-8 max-w-7xl mx-auto w-full flex flex-col gap-16">
+    <section id="features" className="py-32 px-4 md:px-8 max-w-7xl mx-auto w-full flex flex-col gap-16 relative">
       <div className="flex flex-col gap-4 max-w-2xl">
+        <motion.div 
+          animate={{ rotate: [-1, 1, -1] }}
+          transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+          className="inline-block w-max bg-rose-500/10 text-rose-400 font-mono text-sm px-3 py-1 rounded-full border border-rose-500/20 mb-2"
+        >
+          how it actually works
+        </motion.div>
         <h2 className="text-4xl md:text-5xl font-bold tracking-tighter text-zinc-100">
           Everything your browser <br />
-          <span className="text-zinc-500">knows about you.</span>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-400 to-zinc-600 line-through decoration-rose-500 decoration-4">knows about you.</span>
+          <br />
+          <span className="text-rose-500 italic">will be used against you.</span>
         </h2>
       </div>
 

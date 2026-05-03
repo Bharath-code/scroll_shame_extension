@@ -18,15 +18,17 @@ export default function Home() {
       <PricingCards />
       
       {/* Privacy Section */}
-      <section className="py-24 px-4 md:px-8 max-w-4xl mx-auto w-full text-center flex flex-col items-center gap-6">
-        <div className="w-16 h-16 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center mb-4">
-          <ShieldCheck size={32} weight="duotone" className="text-zinc-400" />
+      <section className="py-24 px-4 md:px-8 max-w-4xl mx-auto w-full text-center flex flex-col items-center gap-6 relative">
+        <div className="absolute inset-0 bg-rose-500/5 blur-3xl rounded-full" />
+        <div className="w-16 h-16 rounded-2xl bg-zinc-900 border-2 border-rose-500/20 flex items-center justify-center mb-4 relative z-10 rotate-3">
+          <ShieldCheck size={32} weight="duotone" className="text-rose-400" />
         </div>
-        <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-zinc-100">
-          Your data never leaves your browser.
+        <h2 className="text-3xl md:text-4xl font-bold tracking-tighter text-zinc-100 relative z-10">
+          We don't want your data. <br/>
+          <span className="text-zinc-500 text-2xl">It's frankly embarrassing.</span>
         </h2>
-        <p className="text-zinc-400 leading-relaxed max-w-[65ch]">
-          No account. No server. No telemetry. No analytics. Everything lives in <code className="text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded font-mono text-sm">chrome.storage.local</code>. ScrollShame can't see your data. Nobody can. Except your browser. Which is, functionally, you.
+        <p className="text-zinc-400 leading-relaxed max-w-[65ch] relative z-10 text-lg">
+          No account. No server. No creepy ad tracking. Everything lives locally in your own browser's <code className="text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded font-mono text-sm">storage</code>. ScrollShame can't see your search history. Nobody can. Except your browser. Which is currently writing your roast.
         </p>
       </section>
 

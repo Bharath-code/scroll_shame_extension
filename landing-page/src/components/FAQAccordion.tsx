@@ -20,7 +20,11 @@ const FAQS = [
   },
   {
     question: "Why is my chaos score so high?",
-    answer: "You know why."
+    answer: "Look inward. You know why."
+  },
+  {
+    question: "Can I just delete my history before Monday?",
+    answer: "You can. But the extension remembers. We see the 0 tabs. We know what you're hiding. That's a different kind of chaos."
   },
   {
     question: "Can I share my report?",
@@ -42,7 +46,7 @@ export function FAQAccordion() {
   return (
     <section id="faq" className="py-32 px-4 md:px-8 max-w-3xl mx-auto w-full flex flex-col gap-12">
       <h2 className="text-3xl md:text-4xl font-bold tracking-tighter text-zinc-100 text-center">
-        Frequently Asked Questions
+        Frequently Asked <span className="text-rose-500 line-through decoration-zinc-500">Questions</span> Excuses
       </h2>
 
       <div className="flex flex-col border-t border-white/5">
