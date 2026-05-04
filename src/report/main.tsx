@@ -128,6 +128,8 @@ function Report() {
   // TASK-12: Roast Remix
   const [remixMode,     setRemixMode    ] = useState(false);
   const [remixLines,    setRemixLines   ] = useState<{ voice: RoastVoice; line: string }[]>([]);
+  const [roastFeedback, setRoastFeedback] = useState<'hit' | 'miss' | null>(null);
+  const [featureRequest, setFeatureRequest] = useState<string | null>(null);
 
   useEffect(() => { load(); }, []);
 
@@ -236,6 +238,21 @@ function Report() {
     const next = !remixMode;
     setRemixMode(next);
     if (next) setRemixLines(buildRemixLines());
+  }
+
+  async function handleRoastFeedback(feedback: 'hit' | 'miss') {
+    setRoastFeedback(feedback);
+    const feedbackData = await chromeGet<Record<string, number>>('roast-feedback-stats', {});
+    const key = `${activeVoice}-${feedback}`;
+    feedbackData[key] = (feedbackData[key] || 0) + 1;
+    await chromeSet({ 'roast-feedback-stats': feedbackData });
+  }
+
+  async function handleFeatureRequest(feature: string) {
+    setFeatureRequest(feature);
+    const featureData = await chromeGet<Record<string, number>>('feature-requests-stats', {});
+    featureData[feature] = (featureData[feature] || 0) + 1;
+    await chromeSet({ 'feature-requests-stats': featureData });
   }
 
   // ─── Copy to clipboard ──────────────────────────────────────────────────────
@@ -636,6 +653,30 @@ function Report() {
         <button class="btn-share primary" onClick={shareToX}>
           Post to X ↗
         </button>
+      </div>
+
+      {/* ── Product Discovery: Micro-Feedback Loop ────────────────── */}
+      <div class="discovery-feedback">
+        {featureRequest ? (
+          <p class="feedback-thanks">Roger that. 🫡</p>
+        ) : roastFeedback ? (
+          <div class="feedback-prompt">
+            <span>What's missing from your chaos?</span>
+            <div class="feedback-actions">
+              <button class="btn-feedback" onClick={() => handleFeatureRequest('more-voices')}>More Voices</button>
+              <button class="btn-feedback" onClick={() => handleFeatureRequest('leaderboard')}>Leaderboard</button>
+              <button class="btn-feedback" onClick={() => handleFeatureRequest('hide-evidence')}>Mute Button</button>
+            </div>
+          </div>
+        ) : (
+          <div class="feedback-prompt">
+            <span>Did this roast hit?</span>
+            <div class="feedback-actions">
+              <button class="btn-feedback" onClick={() => handleRoastFeedback('hit')}>🎯 Hit</button>
+              <button class="btn-feedback" onClick={() => handleRoastFeedback('miss')}>💨 Miss</button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* TASK-10: Chaos Certificate — shown at score >= 80 */}

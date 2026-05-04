@@ -610,3 +610,58 @@ html, body {
   white-space: nowrap;
   opacity: 0.75;
 }
+
+/* ─── Product Discovery Feedback ───────────────────────────────────────────── */
+.discovery-feedback {
+  width: 100%;
+  max-width: 400px;
+  padding: 1rem;
+  background: var(--dark);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  text-align: center;
+}
+
+.feedback-prompt {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.feedback-prompt span {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.feedback-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn-feedback {
+  padding: 0.4rem 0.8rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--white);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-feedback:hover {
+  border-color: var(--white);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.feedback-thanks {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--yellow);
+  font-style: italic;
+}
