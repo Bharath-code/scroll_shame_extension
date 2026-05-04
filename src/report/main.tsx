@@ -41,6 +41,8 @@ const GLOBAL_CHAOS_FEED = [
 const UPGRADE_KEY         = 'upgrade-dismissed-until';
 const VIEWS_KEY           = 'report-views';
 const LAST_SHARE_KEY      = 'last-shared-at';
+const PMF_DONE_KEY        = 'pmf-survey-done';
+const PMF_RESULTS_KEY     = 'pmf-results';
 
 const NIGHT_TIMES = [
   '11:42pm', '1:15am', '2:33am', '12:58am',
@@ -139,6 +141,11 @@ function Report() {
   const [remixLines,    setRemixLines   ] = useState<{ voice: RoastVoice; line: string }[]>([]);
   const [roastFeedback, setRoastFeedback] = useState<'hit' | 'miss' | null>(null);
   const [featureRequest, setFeatureRequest] = useState<string | null>(null);
+  const [showPMF,       setShowPMF      ] = useState(false);
+  const [pmfStep,       setPMFStep      ] = useState<1 | 2>(1);
+  const [pmfSentiment,  setPMFSentiment ] = useState<'very' | 'somewhat' | 'not' | null>(null);
+  const [pmfBenefit,    setPMFBenefit   ] = useState('');
+  const [pmfDone,       setPMFDone      ] = useState(false);
 
   useEffect(() => { load(); }, []);
 
@@ -162,6 +169,16 @@ function Report() {
       const prevScore    = await storage.getLastWeekScore();
       setDelta(calculateScoreDelta(chaosScore, prevScore));
       await storage.saveWeekScore(chaosScore);
+      
+      // TASK-24: PMF Survey Logic
+      const views = await chromeGet<number>(VIEWS_KEY, 0);
+      await chromeSet({ [VIEWS_KEY]: views + 1 });
+      
+      const done = await chromeGet<boolean>(PMF_DONE_KEY, false);
+      setPMFDone(done);
+      if (views === 2 && !done) { // 3rd view
+        setShowPMF(true);
+      }
 
       // TASK-11: Streak
       const newStreak = await storage.updateStreak();
@@ -177,14 +194,10 @@ function Report() {
       setAllowedVoices(voices);
       setRoastLines(buildLines(voice, aggregated, chaosScore));
 
-      // Views + upgrade gate
-      const views = await chromeGet<number>(VIEWS_KEY, 0);
-      await chromeSet({ [VIEWS_KEY]: views + 1 });
-      setShowUpgrade(await shouldShowUpgrade(pro));
-
       // Recent share detection (within last 5 min)
       const lastShare = await chromeGet<number>(LAST_SHARE_KEY, 0);
       setRecentShare(Date.now() - lastShare < 5 * 60 * 1000);
+      setShowUpgrade(await shouldShowUpgrade(pro));
     } catch (err) {
       console.error('[ScrollShame] load failed:', err);
     } finally {
@@ -262,6 +275,40 @@ function Report() {
     const featureData = await chromeGet<Record<string, number>>('feature-requests-stats', {});
     featureData[feature] = (featureData[feature] || 0) + 1;
     await chromeSet({ 'feature-requests-stats': featureData });
+  }
+
+  async function handlePMFResponse(sentiment: 'very' | 'somewhat' | 'not') {
+    setPMFSentiment(sentiment);
+    if (sentiment === 'not') {
+      // If not disappointed, just finish
+      await finishPMF(sentiment, '');
+    } else {
+      // Go to step 2 for qualitative feedback
+      setPMFStep(2);
+    }
+  }
+
+  async function finishPMF(sentiment: 'very' | 'somewhat' | 'not', benefit: string) {
+    const results = await chromeGet<Record<string, number>>(PMF_RESULTS_KEY, { very: 0, somewhat: 0, not: 0 });
+    results[sentiment] = (results[sentiment] || 0) + 1;
+    await Promise.all([
+      chromeSet({ [PMF_RESULTS_KEY]: results }),
+      chromeSet({ [PMF_DONE_KEY]: true })
+    ]);
+    setShowPMF(false);
+    setPMFDone(true);
+
+    // TASK-23: Telemetry
+    fetch('https://scrollshame.com/api/discovery', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        type: 'PMF_SURVEY', 
+        sentiment, 
+        benefit,
+        timestamp: new Date().toISOString() 
+      })
+    }).catch(() => {});
   }
 
   // ─── Copy to clipboard ──────────────────────────────────────────────────────
@@ -812,6 +859,41 @@ function Report() {
 
       {!isPaid && (
         <p class="free-notice">Free — upgrade to export without footer</p>
+      )}
+
+      {/* TASK-24: PMF Survey Modal/Overlay */}
+      {showPMF && (
+        <div class="pmf-overlay">
+          <div class="pmf-card">
+            <h3 class="pmf-title">Wait, Before You Go...</h3>
+            
+            {pmfStep === 1 ? (
+              <>
+                <p class="pmf-question">How would you feel if you could no longer use ScrollShame?</p>
+                <div class="pmf-choices">
+                  <button class="btn-pmf very" onClick={() => handlePMFResponse('very')}>Very Disappointed</button>
+                  <button class="btn-pmf somewhat" onClick={() => handlePMFResponse('somewhat')}>Somewhat Disappointed</button>
+                  <button class="btn-pmf not" onClick={() => handlePMFResponse('not')}>Not Disappointed</button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p class="pmf-question">What is the main benefit you get from ScrollShame?</p>
+                <textarea 
+                  class="pmf-textarea" 
+                  placeholder="e.g. It actually stops me from doomscrolling..."
+                  value={pmfBenefit}
+                  onInput={(e) => setPMFBenefit((e.target as HTMLTextAreaElement).value)}
+                />
+                <button class="btn-pmf very" onClick={() => finishPMF(pmfSentiment!, pmfBenefit)}>
+                  Finish Survey
+                </button>
+              </>
+            )}
+            
+            <button class="btn-pmf-dismiss" onClick={() => setShowPMF(false)}>Maybe Later</button>
+          </div>
+        </div>
       )}
     </div>
   );

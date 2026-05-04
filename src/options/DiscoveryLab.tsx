@@ -9,16 +9,24 @@ interface FeatureStats {
   [key: string]: number;
 }
 
+interface PMFStats {
+  very: number;
+  somewhat: number;
+  not: number;
+}
+
 export function DiscoveryLab() {
   const [feedback, setFeedback] = useState<FeedbackStats>({ hit: 0, miss: 0 });
   const [features, setFeatures] = useState<FeatureStats>({});
+  const [pmf, setPMF] = useState<PMFStats>({ very: 0, somewhat: 0, not: 0 });
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    chrome.storage.local.get(['roast-feedback-stats', 'feature-requests-stats'], (result) => {
+    chrome.storage.local.get(['roast-feedback-stats', 'feature-requests-stats', 'pmf-results'], (result) => {
       if (result['roast-feedback-stats']) setFeedback(result['roast-feedback-stats']);
       if (result['feature-requests-stats']) setFeatures(result['feature-requests-stats']);
+      if (result['pmf-results']) setPMF(result['pmf-results']);
     });
   }, []);
 
@@ -29,6 +37,10 @@ export function DiscoveryLab() {
   const sortedFeatures = Object.entries(features).sort((a, b) => b[1] - a[1]);
   const maxFeatureCount = sortedFeatures.length > 0 ? sortedFeatures[0][1] : 1;
 
+  const totalPMF = pmf.very + pmf.somewhat + pmf.not;
+  const pmfScore = totalPMF > 0 ? (pmf.very / totalPMF) * 100 : 0;
+  const pmfHealth = pmfScore >= 40 ? 'healthy' : 'at-risk';
+
   async function handleSubmit() {
     setSubmitting(true);
     setSuccess(false);
@@ -37,6 +49,7 @@ export function DiscoveryLab() {
       timestamp: new Date().toISOString(),
       feedback,
       features,
+      pmf,
       platform: navigator.platform,
       userAgent: navigator.userAgent
     };
@@ -99,6 +112,25 @@ export function DiscoveryLab() {
             )) : <p class="hint">No feature signals recorded yet.</p>}
           </div>
         </div>
+
+        {/* TASK-25: PMF Gauge */}
+        <div class="stat-group">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <h3>Product-Market Fit</h3>
+            <span class={`pmf-health-badge ${pmfHealth}`}>{pmfHealth.toUpperCase()}</span>
+          </div>
+          <div class="pmf-gauge-container">
+            <div class="pmf-gauge-fill" style={{ width: `${pmfScore}%` }} />
+            <div class="pmf-target-line" style={{ left: '40%' }} title="PMF Threshold (40%)" />
+          </div>
+          <div class="bar-label">
+            <span>Must-have Score: {pmfScore.toFixed(0)}%</span>
+            <span>n={totalPMF}</span>
+          </div>
+          {pmfScore < 40 && totalPMF > 5 && (
+            <p class="hint warning">⚠️ Below PMF threshold. Pivot or Refine Core Loop.</p>
+          )}
+        </div>
       </div>
 
       <button 
@@ -113,7 +145,7 @@ export function DiscoveryLab() {
         class="btn-activate" 
         style={{ width: '100%', marginTop: '0.5rem', fontSize: '0.65rem' }}
         onClick={() => {
-          const bundle = { feedback, features };
+          const bundle = { feedback, features, pmf };
           navigator.clipboard.writeText(JSON.stringify(bundle, null, 2));
           alert('Discovery bundle copied to clipboard!');
         }}
