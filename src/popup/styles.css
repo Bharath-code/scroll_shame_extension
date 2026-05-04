@@ -68,7 +68,7 @@ body {
   color: var(--red);
 }
 
-.free-badge, .pro-badge, .plus-badge {
+.free-badge, .pro-badge, .plus-badge, .grand-badge {
   font-family: var(--font-mono);
   font-size: 0.58rem;
   font-weight: 700;
@@ -88,6 +88,11 @@ body {
 .plus-badge {
   background: linear-gradient(135deg, rgba(255, 45, 45, 0.2), rgba(255, 230, 0, 0.2));
   color: var(--white);
+}
+.grand-badge {
+  background: #ff00ff;
+  color: var(--white);
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.4);
 }
 
 /* ─── Stats Grid ───────────────────────────────────────────────────────────── */
@@ -243,6 +248,66 @@ body {
   background: transparent;
   border-color: var(--border);
   color: var(--muted);
+}
+
+/* ── Chaos Truce (TASK-18) ──────────────────── */
+.truce-section {
+  margin: 0.75rem 0;
+  width: 100%;
+}
+
+.btn-truce {
+  width: 100%;
+  padding: 0.6rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px dashed var(--border);
+  border-radius: 4px;
+  color: var(--white);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-truce:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--muted);
+}
+
+.truce-active {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.truce-timer {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+
+.truce-violation {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #ff3333;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.truce-active.violated {
+  border-color: #ff3333;
 }
 .btn-secondary:hover {
   border-color: var(--white);

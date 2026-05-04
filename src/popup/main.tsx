@@ -8,8 +8,8 @@ import { getRamInfo, RamInfo } from '../lib/memory';
 
 import './styles.css';
 
-// TASK-06: tier type updated
-type DisplayTier = 'free' | 'pro' | 'chaos-pass';
+// TASK-06, TASK-17: tier types
+type DisplayTier = 'free' | 'pro' | 'chaos-pass' | 'grand-chaos';
 
 function Popup() {
   const [stats,   setStats  ] = useState<any>(null);
@@ -17,24 +17,33 @@ function Popup() {
   const [tier,    setTier   ] = useState<DisplayTier>('free');
   const [streak,  setStreak ] = useState(0);
   const [ramInfo, setRamInfo] = useState<RamInfo | null>(null);
+  const [truce,   setTruce   ] = useState<any>(null);
+  const [isPaid,  setIsPaid  ] = useState(false);
 
   useEffect(() => { loadStats(); }, []);
 
   async function loadStats() {
     try {
-      const [pro, proPlus] = await Promise.all([isPro(), isProPlus()]);
-      setTier(proPlus ? 'chaos-pass' : pro ? 'pro' : 'free');
+      const [pro, proPlus, grand] = await Promise.all([
+        isPro(),
+        isProPlus(),
+        chrome.storage.local.get('license-status').then(r => r['license-status']?.tier === 'grand-chaos')
+      ]);
+      setIsPaid(pro);
+      setTier(grand ? 'grand-chaos' : proPlus ? 'chaos-pass' : pro ? 'pro' : 'free');
 
       const today = todayKey(new Date());
       const data  = await storage.getDaily(today);
       setStats(data);
 
-      // TASK-11: Load streak for popup display
       const s = await storage.getChaosStreak();
       setStreak(s);
 
       const ram = await getRamInfo();
       setRamInfo(ram);
+
+      const t = await storage.getTruceState();
+      if (t && Date.now() < t.activeUntil) setTruce(t);
     } catch (err) {
       console.error('[ScrollShame] Popup failed to load:', err);
     } finally {
@@ -51,8 +60,9 @@ function Popup() {
 
   // TASK-06: Chaos Pass badge replaces Pro+
   const TierBadge = () => {
-    if (tier === 'chaos-pass') return <span class="plus-badge">Chaos Pass</span>;
-    if (tier === 'pro')        return <span class="pro-badge">Pro</span>;
+    if (tier === 'grand-chaos') return <span class="grand-badge">Grand Chaos</span>;
+    if (tier === 'chaos-pass')  return <span class="plus-badge">Chaos Pass</span>;
+    if (tier === 'pro')         return <span class="pro-badge">Pro</span>;
     return <span class="free-badge">Free</span>;
   };
 
@@ -112,6 +122,28 @@ function Popup() {
             <br />
             {ramInfo.message}
           </p>
+        </div>
+      )}
+
+      {/* ── Chaos Truce (TASK-18) ──────────────────── */}
+      {isPaid && (
+        <div class="truce-section">
+          {truce ? (
+            <div class={`truce-active${truce.violated ? ' violated' : ''}`}>
+              <span class="truce-timer">
+                Truce Active: {Math.ceil((truce.activeUntil - Date.now()) / 60000)}m
+              </span>
+              {truce.violated && <span class="truce-violation">Vow Broken</span>}
+            </div>
+          ) : (
+            <button class="btn-truce" onClick={async () => {
+              const state = { activeUntil: Date.now() + 2 * 60 * 60 * 1000, violated: false, tabsOpenedDuringTruce: 0 };
+              await storage.setTruceState(state);
+              setTruce(state);
+            }}>
+              Declare 2h Chaos Truce
+            </button>
+          )}
         </div>
       )}
 

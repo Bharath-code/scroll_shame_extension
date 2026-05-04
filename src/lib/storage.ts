@@ -19,6 +19,16 @@ export interface StorageAdapter {
   getChaosStreak(): Promise<number>;
   /** Increments streak if first open this week, resets if a week was missed. Returns new streak. */
   updateStreak(): Promise<number>;
+  /** Returns the current active truce state or null if no truce exists. */
+  getTruceState(): Promise<TruceState | null>;
+  /** Persists truce state. */
+  setTruceState(state: TruceState | null): Promise<void>;
+}
+
+export interface TruceState {
+  activeUntil: number; // timestamp
+  violated: boolean;
+  tabsOpenedDuringTruce: number;
 }
 
 const DEFAULT_LICENSE: LicenseStatus = {
@@ -205,6 +215,25 @@ export class ChromeStorageAdapter implements StorageAdapter {
           [this.STREAK_KEY]:       newStreak,
           [this.STREAK_LAST_WEEK]: currentWeek,
         }, () => resolve(newStreak));
+      });
+    });
+  }
+
+  // ─── Truce (TASK-18) ──────────────────────────────────────────────────
+
+  private TRUCE_KEY = 'chaos-truce-state';
+
+  async getTruceState(): Promise<TruceState | null> {
+    return new Promise(resolve => {
+      chrome.storage.local.get(this.TRUCE_KEY, r => resolve(r[this.TRUCE_KEY] || null));
+    });
+  }
+
+  async setTruceState(state: TruceState | null): Promise<void> {
+    return new Promise((resolve, reject) => {
+      chrome.storage.local.set({ [this.TRUCE_KEY]: state }, () => {
+        if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
+        else resolve();
       });
     });
   }

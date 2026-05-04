@@ -28,7 +28,16 @@ import './styles.css';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const UPGRADE_THRESHOLD   = 2;
-const UPGRADE_SNOOZE_DAYS = 30;
+const UPGRADE_SNOOZE_DAYS = 7;
+
+const GLOBAL_CHAOS_FEED = [
+  "An anonymous user in Tokyo just hit a Chaos Score of 94.",
+  "Someone in Berlin is currently at 42 tabs. Amateur.",
+  "A 'Chaos Architect' in San Francisco just broke a 12-week streak.",
+  "New record: 184 tabs opened in a single 'Spiral Session' in London.",
+  "Alert: A user in New York just declared a Chaos Truce. 🫡",
+  "Total RAM saved globally this hour: 0.2GB. (Nobody is closing tabs).",
+];
 const UPGRADE_KEY         = 'upgrade-dismissed-until';
 const VIEWS_KEY           = 'report-views';
 const LAST_SHARE_KEY      = 'last-shared-at';
@@ -94,7 +103,7 @@ function getUpgradeCopy(score: number, recentlyShared: boolean): { headline: str
   };
   return {
     headline: "4 people are waiting to roast you. You've only heard from one.",
-    cta: 'Meet the other 4 — $12',
+    cta: 'Meet the other 4',
   };
 }
 
@@ -422,12 +431,88 @@ function Report() {
       ctx.fillText('✦ CHAOS PASS EDITION ✦', W / 2, 760);
     }
 
-    // Download
     const link  = document.createElement('a');
     link.href   = canvas.toDataURL('image/png');
     link.download = `chaos-certificate-${score}.png`;
     link.click();
   }, [stats, isPlus]);
+
+  const generateLinkedInCertificate = useCallback(async () => {
+    if (!stats) return;
+    const score = calculateChaosScore(stats);
+    
+    // Corporate Title Mapping
+    const getCorporateTitle = (s: number) => {
+      if (s >= 90) return 'Chief Strategic Disruption Officer';
+      if (s >= 80) return 'Lead Operational Velocity Architect';
+      if (s >= 65) return 'Senior Digital Resource Strategist';
+      if (s >= 50) return 'Associate Innovation Catalyst';
+      if (s >= 35) return 'Junior Strategic Pivot Lead';
+      if (s >= 20) return 'Agile Chaos Management Trainee';
+      return 'Risk Management & Focus Consultant';
+    };
+
+    const canvas = document.createElement('canvas');
+    const W = 1200, H = 627; // LinkedIn post ratio
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d')!;
+
+    // Clean Corporate Background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, W, H);
+
+    // LinkedIn Blue Border
+    ctx.strokeStyle = '#0077b5';
+    ctx.lineWidth = 20;
+    ctx.strokeRect(10, 10, W - 20, H - 20);
+
+    // Header Section
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#0077b5';
+    ctx.font = 'bold 24px sans-serif';
+    ctx.fillText('OFFICIAL PERFORMANCE ATTESTATION', W / 2, 80);
+
+    // Main Title
+    ctx.fillStyle = '#1d2226';
+    ctx.font = 'bold 56px sans-serif';
+    ctx.fillText('CERTIFICATE OF', W / 2, 160);
+    ctx.fillText('OPERATIONAL VELOCITY', W / 2, 230);
+
+    // Body
+    ctx.fillStyle = '#666666';
+    ctx.font = '28px sans-serif';
+    ctx.fillText('This document confirms that the holder has maintained a', W / 2, 310);
+    
+    ctx.fillStyle = '#1d2226';
+    ctx.font = 'bold 36px sans-serif';
+    ctx.fillText(`KPI SCORE OF ${score}/100`, W / 2, 370);
+
+    // The Professional Title
+    ctx.fillStyle = '#0077b5';
+    ctx.font = 'italic bold 42px sans-serif';
+    ctx.fillText(getCorporateTitle(score).toUpperCase(), W / 2, 450);
+
+    // Footer Info
+    const dateStr = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    ctx.fillStyle = '#999999';
+    ctx.font = '20px sans-serif';
+    ctx.fillText(`Evaluation Period: ${dateStr} · Verify at scrollshame.com`, W / 2, 530);
+
+    // "Seal"
+    ctx.beginPath();
+    ctx.arc(W - 150, H - 150, 60, 0, Math.PI * 2);
+    ctx.fillStyle = '#0077b5';
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 14px sans-serif';
+    ctx.fillText('VERIFIED', W - 150, H - 160);
+    ctx.fillText('CHAOS', W - 150, H - 140);
+
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = `linkedin-attestation-${score}.png`;
+    link.click();
+  }, [stats]);
 
   async function dismissUpgrade() {
     const until = new Date();
@@ -531,7 +616,23 @@ function Report() {
           {/* TASK-01: Chaos Score — TASK-03: Delta badge — TASK-04: Clean week accent */}
           <div class={`chaos-total${cleanWeek ? ' clean' : ''}`}>
             <p class="total-label">Chaos Score</p>
-            <span class="total-score">{chaosScore}</span>
+            <div class="score-display">
+            <span class="score-number">{chaosScore}</span>
+            <span class="score-max">/ 100</span>
+          </div>
+
+          {/* TASK-20: Global Chaos Ticker */}
+          <div class="global-ticker">
+            <div class="ticker-content">
+              {GLOBAL_CHAOS_FEED.map(text => (
+                <span class="ticker-item">{text}</span>
+              ))}
+              {/* Duplicate for seamless loop */}
+              {GLOBAL_CHAOS_FEED.map(text => (
+                <span class="ticker-item">{text}</span>
+              ))}
+            </div>
+          </div>
             <p class="score-title">
               {cleanWeek ? '😶 Suspiciously Clean Week' : chaosTitle}
             </p>
@@ -549,17 +650,33 @@ function Report() {
             )}
           </div>
 
-          {/* TASK-07: Context-aware upgrade prompt */}
+          {/* TASK-17: 3-Tier Pricing Anchor UI */}
           {showUpgrade && !isPaid && (
-            <div class="upgrade-prompt">
-              <p>{upgradeCopy.headline}</p>
-              <button
-                class="btn-upgrade"
-                onClick={() => window.open('https://polar.sh/scrollshame', '_blank')}
-              >
-                {upgradeCopy.cta}
-              </button>
-              <button class="btn-dismiss" onClick={dismissUpgrade}>Not now</button>
+            <div class="upgrade-prompt multi-tier">
+              <p class="upgrade-headline">{upgradeCopy.headline}</p>
+              
+              <div class="tier-options">
+                <div class="tier-card">
+                  <span class="tier-name">Pro</span>
+                  <span class="tier-price">$12</span>
+                  <button class="btn-tier" onClick={() => window.open('https://polar.sh/scrollshame/pro', '_blank')}>Basic Roast</button>
+                </div>
+                
+                <div class="tier-card featured">
+                  <span class="badge-featured">Best Value</span>
+                  <span class="tier-name">Chaos Pass</span>
+                  <span class="tier-price">$24</span>
+                  <button class="btn-tier primary" onClick={() => window.open('https://polar.sh/scrollshame/chaos', '_blank')}>Unlock All</button>
+                </div>
+
+                <div class="tier-card anchor">
+                  <span class="tier-name">Grand Chaos</span>
+                  <span class="tier-price">$49</span>
+                  <button class="btn-tier" onClick={() => window.open('https://polar.sh/scrollshame/grand', '_blank')}>Total Loss</button>
+                </div>
+              </div>
+
+              <button class="btn-dismiss" onClick={dismissUpgrade}>Not now, I'm boring</button>
             </div>
           )}
 
@@ -681,12 +798,16 @@ function Report() {
 
       {/* TASK-10: Chaos Certificate — shown at score >= 80 */}
       {chaosScore >= 80 && (
-        <div class="certificate-row">
-          <button class="btn-certificate" onClick={downloadCertificate}>
-            🏆 Download Chaos Certificate
-          </button>
-          {isPlus && <span class="cert-gold-label">✦ Gold Edition</span>}
-        </div>
+            <div class="report-actions">
+              <button class="btn-primary" onClick={downloadCertificate}>
+                Download Chaos Certificate
+              </button>
+              {isPlus && (
+                <button class="btn-linkedin" onClick={generateLinkedInCertificate}>
+                  Professional Attestation (LinkedIn)
+                </button>
+              )}
+            </div>
       )}
 
       {!isPaid && (

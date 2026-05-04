@@ -15,6 +15,8 @@ export interface DayData {
   tabDecisionTime?: number;
   /** Peak scroll velocity in px/sec for the day */
   peakVelocity?: number;
+  /** True if a Chaos Truce was broken today */
+  truceViolation?: boolean;
 }
 
 export interface WeeklyStats extends DayData {}
@@ -49,6 +51,9 @@ export function calculateChaosScore(stats: DayData | null): number {
 
   // Keyboard crimes: 3 pts each, up to 15
   score += Math.min(Math.max(stats.backspaceRage || 0, 0) * 3, 15);
+
+  // Truce violation: +15 points per violation day
+  if (stats.truceViolation) score += 15;
 
   return Math.min(Math.round(score), 100);
 }
@@ -155,6 +160,7 @@ export function aggregateStats(dataList: DayData[]): WeeklyStats {
       backspaceRage:       (acc.backspaceRage || 0) + (data.backspaceRage || 0),
       tabDecisionTime:     (acc.tabDecisionTime || 0) + (data.tabDecisionTime || 0),
       peakVelocity:        Math.max(acc.peakVelocity || 0, data.peakVelocity || 0),
+      truceViolation:      acc.truceViolation || data.truceViolation,
     }),
     {} as WeeklyStats,
   );

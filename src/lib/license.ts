@@ -2,7 +2,7 @@ import { storage } from './storage';
 
 // TASK-06: 'chaos-pass' replaces 'pro-plus'. 'pro-plus' is kept as an alias
 // so existing saved license keys continue working on upgrade.
-export type LicenseTier = 'free' | 'pro' | 'chaos-pass' | 'pro-plus';
+export type LicenseTier = 'free' | 'pro' | 'chaos-pass' | 'pro-plus' | 'grand-chaos';
 
 export interface LicenseStatus {
   tier: LicenseTier;
@@ -22,7 +22,7 @@ export async function setLicenseStatus(status: LicenseStatus): Promise<void> {
 export async function isPro(): Promise<boolean> {
   try {
     const { tier } = await getLicenseStatus();
-    return tier === 'pro' || tier === 'chaos-pass' || tier === 'pro-plus';
+    return tier === 'pro' || tier === 'chaos-pass' || tier === 'pro-plus' || tier === 'grand-chaos';
   } catch (error) {
     console.error('[License] Failed to check pro status:', error);
     return false;
@@ -33,7 +33,7 @@ export async function isPro(): Promise<boolean> {
 export async function isProPlus(): Promise<boolean> {
   try {
     const { tier } = await getLicenseStatus();
-    return tier === 'chaos-pass' || tier === 'pro-plus';
+    return tier === 'chaos-pass' || tier === 'pro-plus' || tier === 'grand-chaos';
   } catch (error) {
     console.error('[License] Failed to check chaos-pass status:', error);
     return false;
@@ -42,6 +42,17 @@ export async function isProPlus(): Promise<boolean> {
 
 /** @deprecated alias — use isProPlus */
 export const isChaosPass = isProPlus;
+
+/** True only if user has Grand Chaos */
+export async function isGrandChaos(): Promise<boolean> {
+  try {
+    const { tier } = await getLicenseStatus();
+    return tier === 'grand-chaos';
+  } catch (error) {
+    console.error('[License] Failed to check grand-chaos status:', error);
+    return false;
+  }
+}
 
 export async function upgradeToPro(licenseKey: string): Promise<void> {
   const tier = getTierFromKey(licenseKey);
@@ -90,6 +101,9 @@ export function getTierFromKey(key: string): LicenseTier {
   const expectedChecksum = sum % 10;
   const actualChecksum   = parseInt(cleanKey.slice(-1), 10);
   if (expectedChecksum !== actualChecksum) return 'free';
+
+  // Grand Chaos: GC prefix
+  if (cleanKey.startsWith('GC')) return 'grand-chaos';
 
   // Chaos Pass keys: CP prefix (new) or PP prefix (legacy)
   if (cleanKey.startsWith('CP') || cleanKey.startsWith('PP')) return 'chaos-pass';

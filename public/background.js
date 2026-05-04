@@ -38,11 +38,28 @@ chrome.runtime.onStartup.addListener(async () => {
   cleanupOldData();
 });
 
-chrome.tabs.onCreated.addListener((tab) => {
+chrome.tabs.onCreated.addListener(async (tab) => {
   if (tab.id) {
     activeTabs.set(tab.id, Date.now());
   }
   updatePeakTabs();
+
+  // TASK-18: Chaos Truce monitoring
+  const result = await new Promise(resolve => chrome.storage.local.get('chaos-truce-state', resolve));
+  const truce  = result['chaos-truce-state'];
+  if (truce && Date.now() < truce.activeUntil) {
+    truce.tabsOpenedDuringTruce = (truce.tabsOpenedDuringTruce || 0) + 1;
+    if (truce.tabsOpenedDuringTruce > 5) {
+      truce.violated = true;
+      // TASK-18: Mark daily violation
+      const today = getTodayKey();
+      getDailyData(today).then(dailyData => {
+        dailyData.truceViolation = true;
+        saveDailyData(today, dailyData);
+      });
+    }
+    await new Promise(resolve => chrome.storage.local.set({ 'chaos-truce-state': truce }, resolve));
+  }
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
@@ -105,6 +122,11 @@ async function checkOSHarassment(currentCount) {
   // 1-hour cooldown
   const now = Date.now();
   if (now - lastHarassmentTime < 60 * 60 * 1000) return;
+
+  // TASK-18: Respect Chaos Truce
+  const truceResult = await new Promise(resolve => chrome.storage.local.get('chaos-truce-state', resolve));
+  const truce = truceResult['chaos-truce-state'];
+  if (truce && now < truce.activeUntil) return;
   
   // Check settings
   const settingsResult = await new Promise(resolve => chrome.storage.local.get(STORAGE_KEYS.SETTINGS, resolve));
