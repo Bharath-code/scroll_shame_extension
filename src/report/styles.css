@@ -145,9 +145,26 @@ html, body {
   gap: 0.6rem;
 }
 
+.btn-primary {
+  width: 100%;
+  padding: 1rem 2rem;
+  background: var(--red);
+  border: 1px solid var(--red);
+  border-radius: 4px;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
 .btn-primary:hover {
   background: #cc1e1e;
   border-color: #cc1e1e;
+  transform: translateY(-1px);
 }
 
 .btn-linkedin {

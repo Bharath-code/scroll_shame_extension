@@ -4,6 +4,7 @@ import { isPro, isProPlus, upgradeToPro, upgradeToProPlus } from '../lib/license
 import type { ExtensionSettings } from '../lib/storage';
 import type { RoastVoice } from '../lib/roast-pools';
 import { VOICE_LABELS, PRO_VOICES, PRO_PLUS_VOICES } from '../lib/roast-pools';
+import { DiscoveryLab } from './DiscoveryLab';
 
 const DEFAULT_SETTINGS: ExtensionSettings = {
   notificationTime:    'monday-9am',
@@ -248,6 +249,9 @@ function Options() {
           </label>
         </div>
       </section>
+
+      {/* ── Discovery Lab (TASK-21) ────────────────────────────── */}
+      <DiscoveryLab />
 
       {/* ── Save ────────────────────────────────────────────────── */}
       <div class="actions">
