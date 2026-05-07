@@ -25,7 +25,7 @@ export function FeatureBreakdown() {
             Five Narrators. <span className="text-zinc-500">One Week.</span> All Opinions.
           </h3>
           <p className="text-lg text-zinc-400 leading-relaxed max-w-[45ch]">
-            Your report gets read by whoever you chose. They all have something to say. Unlock all 5 voices for $12 — one time.
+            Your report gets read by whoever you chose. They all have something to say. Unlock all 5 voices, Roast Remix Mode, and the Gold Chaos Certificate with the $24 Chaos Pass.
           </p>
         </div>
 
@@ -110,13 +110,13 @@ export function FeatureBreakdown() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
         <div className="flex flex-col gap-6">
           <div className="inline-flex items-center gap-2 text-rose-500 font-mono text-sm tracking-tight">
-            <Fire size={16} /> 03 / Chaos Pass Exclusive
+            <Fire size={16} /> 03 / Grand Chaos Tier
           </div>
           <h3 className="text-4xl md:text-5xl font-bold tracking-tighter text-zinc-100">
-            Aggressive <span className="text-zinc-500">Mode.</span>
+            Grand <span className="text-zinc-500">Chaos.</span>
           </h3>
           <p className="text-lg text-zinc-400 leading-relaxed max-w-[45ch]">
-            For $4.99/mo, we take the kid gloves off. **Tab Title Hijacking** guilt-trips you when you abandon tabs. **OS-Level Harassment** blows up your notifications when you spiral. And if you doomscroll for 5 minutes straight? We literally hijack your screen and force you to **Touch Grass**.
+            For $49, we take the kid gloves off. **Tab Title Hijacking** guilt-trips you when you abandon tabs. **OS-Level Harassment** blows up your notifications when you spiral. And if you doomscroll for 5 minutes straight? We literally hijack your screen and force you to **Touch Grass**.
           </p>
         </div>
 

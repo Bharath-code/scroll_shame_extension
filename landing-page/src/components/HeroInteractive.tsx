@@ -61,11 +61,11 @@ export function HeroInteractive() {
           </motion.div>
 
           <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-[1.1] text-zinc-100">
-            Your browser is <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-red-500 to-rose-600 inline-block origin-left hover:scale-105 hover:rotate-2 transition-transform cursor-pointer">quietly judging you.</span>
+            Your browser has been <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-red-500 to-rose-600 inline-block origin-left hover:scale-105 hover:rotate-2 transition-transform cursor-pointer">keeping a file on you.</span>
           </h1>
 
           <p className="text-lg md:text-xl text-zinc-400 leading-relaxed max-w-[45ch]">
-            Every unread tab. Every 3 AM doomscroll. Every time you rage-quit Twitter just to reopen it 5 seconds later. ScrollShame turns your digital dumpster fire into a weekly narrated receipt. And if you're really out of control? We will actively harass you until you stop.
+            Every tab, every 2am session, every tab you opened and closed in thirty seconds hoping nobody noticed. ScrollShame turns your browser history into a weekly Chaos Report — narrated by someone who has opinions about it.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mt-4">
@@ -76,7 +76,7 @@ export function HeroInteractive() {
             >
               <div className="absolute inset-0 bg-white/20 translate-y-[-100%] group-hover:translate-y-[100%] transition-transform duration-500" />
               <span className="relative flex items-center justify-center gap-2">
-                Get Roasted — Free
+                Get ScrollShame — Free
                 <ArrowRight weight="bold" className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
               </span>
             </motion.button>

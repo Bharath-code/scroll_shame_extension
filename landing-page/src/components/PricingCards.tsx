@@ -21,30 +21,30 @@ const plans = [
     delay: 0
   },
   {
-    name: "Pro",
-    price: "$12",
+    name: "Chaos Pass",
+    price: "$24",
     features: [
       "Everything in Free",
       "All 5 roast voices",
       "Roast Remix Mode",
-      "Chaos Certificate (red)",
+      "Chaos Certificate (gold)",
       "Export without footer"
     ],
-    cta: "Get Pro",
+    cta: "Get Chaos Pass",
     popular: true,
     delay: 0.1
   },
   {
-    name: "Chaos Pass",
-    price: "$4.99",
+    name: "Grand Chaos",
+    price: "$49",
     features: [
-      "Everything in Pro",
+      "Everything in Chaos Pass",
       "OS-Level Harassment",
       "Tab Title Hijacking",
       "Forced 'Touch Grass' Breaks",
       "All future unhinged updates"
     ],
-    cta: "Get Chaos Pass",
+    cta: "Get Grand Chaos",
     popular: false,
     delay: 0.2
   }
@@ -88,8 +88,7 @@ export function PricingCards() {
               <h3 className="text-xl font-bold text-zinc-100">{plan.name}</h3>
               <div className="flex items-baseline gap-1">
                 <span className="text-4xl font-bold tracking-tighter text-zinc-100">{plan.price}</span>
-                {plan.price === "$12" && <span className="text-sm text-zinc-500 font-medium">/ once</span>}
-                {plan.price === "$4.99" && <span className="text-sm text-zinc-500 font-medium">/ mo</span>}
+                {plan.price !== "$0" && <span className="text-sm text-zinc-500 font-medium">/ once</span>}
               </div>
             </div>
 
